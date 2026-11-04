@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shift & Stub Tracker</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Shift & Stub">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16222b" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; -webkit-text-size-adjust: 100%; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+<style>
+/* Layout: one narrow phone column; sticky period bar on top, tab bar fixed at bottom. */
+:root {
+  --bg: #f3f6f8; --surface: #ffffff; --fg: #12202b; --muted: #5b6b78; --line: #dbe3e9;
+  --accent: #0b6a88; --accent-ink: #ffffff; --accent-soft: #e1eff4;
+  --union: #a75a12; --union-soft: #f8ecdf;
+  --good: #1d7a46; --good-soft: #e3f3e9; --warn: #8a6100; --warn-soft: #fbf1d6; --bad: #b42318; --bad-soft: #fbe5e3;
+  --display: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  --body: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e171e; --surface: #16222b; --fg: #e6edf2; --muted: #93a4b1; --line: #26343f;
+  --accent: #5cc0de; --accent-ink: #06222c; --accent-soft: #143440;
+  --union: #f0a35a; --union-soft: #3a2614;
+  --good: #5fd08e; --good-soft: #123222; --warn: #f2c14e; --warn-soft: #362a0c; --bad: #ff8a80; --bad-soft: #3d1715; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0e171e; --surface: #16222b; --fg: #e6edf2; --muted: #93a4b1; --line: #26343f;
+  --accent: #5cc0de; --accent-ink: #06222c; --accent-soft: #143440;
+  --union: #f0a35a; --union-soft: #3a2614;
+  --good: #5fd08e; --good-soft: #123222; --warn: #f2c14e; --warn-soft: #362a0c; --bad: #ff8a80; --bad-soft: #3d1715; color-scheme: dark }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.45 var(--body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+h2 { font-size: 1.15rem; font-weight: 700; }
+h3 { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Top bar */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+header.top .wrap { padding-block: 10px; display: grid; gap: 6px; }
+.brand { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.brand h1 { font-size: 1.05rem; font-weight: 800; letter-spacing: .01em; }
+.brand .sync { font-size: .75rem; color: var(--muted); }
+.period { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 6px; }
+.period button { height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); font-size: 1.2rem; }
+.period .label { text-align: center; line-height: 1.2; }
+.period .label strong { font-family: var(--display); font-size: 1.05rem; display: block; }
+.period .label span { font-size: .78rem; color: var(--muted); }
+
+main .wrap { padding-block: 14px 110px; display: grid; gap: 14px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+
+/* Reminders */
+.reminder { display: flex; gap: 10px; align-items: flex-start; background: var(--warn-soft); color: var(--fg); border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); border-radius: 12px; padding: 10px 12px; font-size: .9rem; }
+.reminder b { color: var(--warn); }
+.reminder button { margin-left: auto; flex: none; border: 0; background: transparent; color: var(--accent); font-weight: 600; padding: 2px 4px; }
+
+/* Summary */
+.totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.totals div { display: grid; gap: 2px; min-width: 0; }
+.totals small { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.totals .num { font-size: 1.15rem; font-weight: 500; }
+.totals .net .num { color: var(--accent); }
+.jobsplit { display: grid; gap: 6px; }
+.jobrow { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: .9rem; }
+
+.tag { display: inline-block; font-size: .7rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.tag.union { background: var(--union-soft); color: var(--union); }
+
+/* Shift list */
+.shifts { display: grid; gap: 0; }
+.shift { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+.shift:first-child { border-top: 0; }
+.shift .when { min-width: 0; }
+.shift .when strong { display: block; font-weight: 600; }
+.shift .when span { color: var(--muted); font-size: .84rem; }
+.shift .hrs { font-size: 1rem; }
+.del { border: 1px solid var(--line); background: transparent; border-radius: 8px; height: 34px; min-width: 34px; color: var(--muted); padding: 0 8px; font-size: .8rem; }
+.bar { height: 10px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--union); }
+.del.armed { background: var(--bad); border-color: var(--bad); color: #fff; }
+.empty { color: var(--muted); font-size: .9rem; }
+
+/* Forms */
+.field { display: grid; gap: 4px; min-width: 0; grid-template-rows: 1fr auto; }
+.field label { align-self: end; }
+.field label { font-size: .78rem; font-weight: 600; color: var(--muted); }
+.field input, .field select { font-size: 16px; width: 100%; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); padding: 0 10px; }
+.field input.num { font-family: var(--mono); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seg button { border: 0; background: var(--bg); height: 44px; font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.seg button.u[aria-pressed="true"] { background: var(--union); color: var(--surface); }
+.primary { height: 48px; border: 0; border-radius: 12px; background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 1rem; }
+.secondary { height: 40px; border: 1px solid var(--line); border-radius: 10px; background: transparent; font-weight: 600; padding: 0 14px; }
+.hint { font-size: .8rem; color: var(--muted); margin: 0; }
+.toggle { display: flex; gap: 10px; align-items: center; font-size: .92rem; }
+.toggle input { width: 20px; height: 20px; accent-color: var(--accent); }
+.err { color: var(--bad); font-size: .85rem; margin: 0; }
+
+/* Stub-style tables */
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th { text-align: left; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 6px 4px; border-bottom: 1px solid var(--line); }
+td { padding: 7px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.r, th.r { text-align: right; }
+tr.sub td { color: var(--muted); font-size: .8rem; border-bottom: 0; padding-top: 0; }
+tr.total td { font-weight: 600; border-bottom: 0; border-top: 2px solid var(--fg); }
+.pill { display: inline-block; font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.pill.match { background: var(--good-soft); color: var(--good); }
+.pill.close { background: var(--warn-soft); color: var(--warn); }
+.pill.off { background: var(--bad-soft); color: var(--bad); }
+.verdict { border-radius: 12px; padding: 12px; font-weight: 600; }
+.verdict.match { background: var(--good-soft); color: var(--good); }
+.verdict.off { background: var(--bad-soft); color: var(--bad); }
+.verdict.close { background: var(--warn-soft); color: var(--warn); }
+
+/* Tab bar */
+nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+nav.tabs .wrap { display: grid; grid-template-columns: repeat(4, 1fr); padding-block: 6px; gap: 6px; }
+nav.tabs button { border: 0; background: transparent; height: 46px; border-radius: 10px; font-weight: 600; color: var(--muted); font-size: .92rem; }
+nav.tabs button[aria-selected="true"] { background: var(--accent-soft); color: var(--accent); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 8px 14px; border-radius: 999px; font-size: .88rem; z-index: 6; }
+details summary { cursor: pointer; font-weight: 600; }
+@media (max-width: 380px) { .grid3 { grid-template-columns: 1fr 1fr; } }
+@media (prefers-reduced-motion: no-preference) { .toast { transition: opacity .2s; } }
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><h1>Shift &amp; Stub Tracker</h1><span class="sync" id="sync">Loading…</span></div>
+    <div class="period">
+      <button id="prev" aria-label="Previous pay period">‹</button>
+      <div class="label"><strong id="plabel">–</strong><span id="psub">–</span></div>
+      <button id="next" aria-label="Next pay period">›</button>
+    </div>
+  </div>
+</header>
+
+<main><div class="wrap">
+  <div class="panel" id="welcome" hidden>
+    <h2>Welcome</h2>
+    <p class="hint" style="font-size:.9rem">Your hours and pay stay on this phone. Already have a backup file? Restore it to pick up where you left off.</p>
+    <button class="primary" id="welcomeRestore">Restore from a backup file</button>
+    <button class="secondary" id="welcomeFresh">Start fresh</button>
+  </div>
+  <div id="reminders" style="display:grid;gap:8px"></div>
+
+  <!-- HOURS -->
+  <section id="tab-hours" style="display:grid;gap:14px">
+    <div class="panel" id="summary"></div>
+    <div class="panel">
+      <h2>Add a shift</h2>
+      <div class="seg" role="group" aria-label="Department">
+        <button id="jobAux" aria-pressed="true">Auxiliary</button>
+        <button id="jobUnion" class="u" aria-pressed="false">FSW · Union</button>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="fDate">Date</label><input type="date" id="fDate"></div>
+        <div class="field" id="fTypeAuto" hidden><label>Pay type</label><p class="hint" style="margin:6px 0 0">Automatic: rate, overtime, stats &amp; premium from the Oval agreement</p></div>
+        <div class="field" id="fTypeWrap"><label for="fType">Pay type</label>
+          <select id="fType"><option value="regular">Regular</option><option value="ot15">Overtime 1.5×</option><option value="ot2">Overtime 2×</option><option value="stat">Stat holiday pay</option></select></div>
+      </div>
+      <div class="grid3">
+        <div class="field"><label for="fStart">Start</label><input type="time" id="fStart" value="09:00"></div>
+        <div class="field"><label for="fEnd">End</label><input type="time" id="fEnd" value="17:00"></div>
+        <div class="field"><label for="fBreak" id="fBreakLbl">Meal break (unpaid)</label><input type="number" id="fBreak" class="num" inputmode="numeric" min="0" step="5" value="30"></div>
+      </div>
+      <p class="hint" id="fCalc"></p>
+      <p class="err" id="fErr" hidden></p>
+      <button class="primary" id="addShift">Add shift</button>
+      <details><summary class="hint">Only know the total hours?</summary>
+        <div class="grid2" style="margin-top:8px">
+          <div class="field"><label for="fHours">Hours</label><input type="number" id="fHours" class="num" inputmode="decimal" min="0" step="0.25" placeholder="e.g. 7.5"></div>
+          <div class="field" style="align-self:end"><button class="secondary" id="addHours" style="height:44px">Add hours</button></div>
+        </div>
+      </details>
+    </div>
+    <div class="panel"><h2>Shifts this period</h2><div class="shifts" id="shiftList"></div></div>
+  </section>
+
+  <!-- PAY CHECK -->
+  <section id="tab-pay" style="display:grid;gap:14px" hidden>
+    <div class="panel"><h2>Expected pay</h2><p class="hint">Calculated from your logged shifts, 2026 BC rates.</p><div class="tablewrap" id="expected"></div></div>
+    <div class="panel">
+      <h2>Your pay stub</h2>
+      <p class="hint">Type in the numbers from the stub for this period. Leave blank anything not on it.</p>
+      <div class="grid2" id="stubForm"></div>
+      <button class="primary" id="saveStub">Check my pay</button>
+    </div>
+    <div class="panel" id="compare" hidden></div>
+  </section>
+
+  <!-- SENIORITY -->
+  <section id="tab-seniority" style="display:grid;gap:14px" hidden>
+    <div class="panel" id="senSummary"></div>
+    <div class="panel">
+      <h2>Check a seniority list</h2>
+      <p class="hint">Lists are posted on the Intranet in January and July. Enter the date the list counts up to and the total hours it shows for you.</p>
+      <div class="grid2">
+        <div class="field"><label for="chkDate">List date (hours up to)</label><input type="date" id="chkDate"></div>
+        <div class="field"><label for="chkHours">Your hours on the list</label><input type="number" id="chkHours" class="num" step="0.01" inputmode="decimal"></div>
+      </div>
+      <button class="secondary" id="addCheck">Compare</button>
+      <div class="tablewrap" id="checks"></div>
+    </div>
+    <div class="panel"><h2>Running tab by pay period</h2><div class="tablewrap" id="senTab"></div></div>
+    <div class="panel">
+      <h2>Hours before logging</h2>
+      <p class="hint">Total hours worked as a Facility Service Worker up to and including this date, from your pay stubs or a seniority list. Only shifts after this date are added on top.</p>
+      <div class="grid2">
+        <div class="field"><label for="senAsOf">Up to (date)</label><input type="date" id="senAsOf"></div>
+        <div class="field"><label for="senHours">Hours worked</label><input type="number" id="senHours" class="num" step="0.01" inputmode="decimal"></div>
+      </div>
+      <button class="primary" id="saveSen">Save starting hours</button>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="tab-settings" style="display:grid;gap:14px" hidden>
+    <div class="panel" id="jobsPanel"></div>
+    <div class="panel">
+      <h2>Year-to-date starting point</h2>
+      <p class="hint">Copy these from your latest pay stub. Used so CPP and EI stop at the yearly maximum.</p>
+      <div class="grid3">
+        <div class="field"><label for="ytdAsOf">Period ending</label><input type="date" id="ytdAsOf"></div>
+        <div class="field"><label for="ytdCpp">YTD CPP</label><input type="number" id="ytdCpp" class="num" step="0.01" inputmode="decimal"></div>
+        <div class="field"><label for="ytdEi">YTD EI</label><input type="number" id="ytdEi" class="num" step="0.01" inputmode="decimal"></div>
+      </div>
+    </div>
+    <button class="primary" id="saveSettings">Save settings</button>
+    <div class="panel">
+      <h2>Backup</h2>
+      <p class="hint">Everything is saved on this phone only. Make a backup every couple of weeks and save it to iCloud Drive. You'll need it if you get a new phone or delete the app.</p>
+      <button class="primary" id="backupBtn">Back up now</button>
+      <button class="secondary" id="restoreBtn">Restore from a backup file</button>
+      <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+      <div id="restoreConfirm" hidden style="display:grid;gap:8px">
+        <p class="err" id="restoreMsg"></p>
+        <div class="grid2"><button class="primary" id="restoreYes" style="background:var(--bad)">Replace my data</button><button class="secondary" id="restoreNo">Cancel</button></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Rates used (2026, BC)</h2>
+      <div class="tablewrap"><table class="num" id="ratesTable"></table></div>
+      <p class="hint">Taxes are estimated with the CRA's per-period method, so they can differ from the stub by a few cents to a dollar. CPP2 (on earnings over $74,600) isn't included.</p>
+    </div>
+    <p class="hint" style="text-align:center">Shift &amp; Stub Tracker <span class="num" id="appVersion"></span></p>
+  </section>
+</div></main>
+
+<nav class="tabs"><div class="wrap" role="tablist">
+  <button role="tab" id="t-hours" aria-selected="true">Hours</button>
+  <button role="tab" id="t-pay" aria-selected="false">Pay</button>
+  <button role="tab" id="t-seniority" aria-selected="false">Seniority</button>
+  <button role="tab" id="t-settings" aria-selected="false">Settings</button>
+</div></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const E = (() => {
+// ===== Pay engine (2026, British Columbia, biweekly) =====
+const RATES = {
+  year: 2026, periods: 26,
+  cpp: { rate: 0.0595, baseRate: 0.0495, exempt: 3500, maxContrib: 4230.45, maxBase: 3519.45 },
+  ei: { rate: 0.0163, maxPremium: 1123.07 },
+  fed: { brackets: [[58523, 0.14], [117045, 0.205], [181440, 0.26], [258482, 0.29], [Infinity, 0.33]], bpa: 16452, cea: 1501 },
+  bc: { brackets: [[50363, 0.056], [100728, 0.077], [115648, 0.105], [140430, 0.1229], [190405, 0.147], [265545, 0.168], [Infinity, 0.205]],
+        bpa: 13216, reductionMax: 690, reductionThreshold: 25570, reductionRate: 0.0356 }
+};
+const PAY_TYPES = { regular: { label: 'Regular', mult: 1 }, statWorked: { label: 'Stat holiday worked @ 1.5', mult: 1.5 }, ot15: { label: 'OT @ 1.5', mult: 1.5 }, ot2: { label: 'OT @ 2.0', mult: 2 }, stat: { label: 'Stat holiday pay', mult: 1 } };
+const r2 = n => Math.round(+(n * 100).toFixed(6)) / 100; // cents, ignoring floating-point dust
+
+function shiftHours(s) {
+  if (s.start && s.end) {
+    const [sh, sm] = s.start.split(':').map(Number), [eh, em] = s.end.split(':').map(Number);
+    let mins = (eh * 60 + em) - (sh * 60 + sm);
+    if (mins <= 0) mins += 24 * 60; // overnight shift
+    mins -= Number(s.breakMin || 0);
+    return Math.max(0, mins / 60);
+  }
+  return Math.max(0, Number(s.hours || 0));
+}
+
+function annualTax(A, brackets) { // progressive tax on annual income A
+  let tax = 0, low = 0;
+  for (const [top, rate] of brackets) { if (A > low) tax += (Math.min(A, top) - low) * rate; low = top; }
+  return tax;
+}
+
+
+// ----- BC statutory holidays -----
+function easterSunday(y) { // Anonymous Gregorian algorithm
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3),
+    h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451),
+    month = Math.floor((h + l - 7 * m + 114) / 31), day = ((h + l - 7 * m + 114) % 31) + 1;
+  return Date.UTC(y, month - 1, day);
+}
+function nthMonday(y, m, n) { const first = new Date(Date.UTC(y, m, 1)).getUTCDay(); return Date.UTC(y, m, 1 + ((8 - first) % 7) + 7 * (n - 1)); }
+function bcStatHolidays(y, withBoxingDay) {
+  const D = (m, d) => Date.UTC(y, m, d), may25 = D(4, 25), v = may25 - (((new Date(may25).getUTCDay() + 6) % 7) || 7) * 86400000;
+  const list = [["New Year's Day", D(0, 1)], ['Family Day', nthMonday(y, 1, 3)], ['Good Friday', easterSunday(y) - 2 * 86400000], ['Victoria Day', v],
+    ['Canada Day', D(6, 1)], ['BC Day', nthMonday(y, 7, 1)], ['Labour Day', nthMonday(y, 8, 1)], ['Truth and Reconciliation Day', D(8, 30)],
+    ['Thanksgiving', nthMonday(y, 9, 2)], ['Remembrance Day', D(10, 11)], ['Christmas Day', D(11, 25)]];
+  if (withBoxingDay) list.push(['Boxing Day', D(11, 26)]);
+  const out = {}; list.forEach(([n, t]) => out[new Date(t).toISOString().slice(0, 10)] = n); return out;
+}
+// Stat holidays in the Oval agreement (Article 11.01): the BC list plus Boxing Day
+function statName(dateStr) { return bcStatHolidays(Number(dateStr.slice(0, 4)), true)[dateStr] || null; }
+
+// ----- worked minutes of a shift, in time order (unpaid break taken from the middle) -----
+function workedMinutes(s) { // returns array of minute-of-day values (0..1439, may wrap past midnight)
+  if (!(s.start && s.end)) return null;
+  const [sh, sm] = s.start.split(':').map(Number), [eh, em] = s.end.split(':').map(Number);
+  const st = sh * 60 + sm; let len = eh * 60 + em - st; if (len <= 0) len += 1440;
+  const brk = Math.min(Number(s.breakMin || 0), len), bStart = Math.floor((len - brk) / 2);
+  const out = []; for (let i = 0; i < len; i++) if (i < bStart || i >= bStart + brk) out.push((st + i) % 1440);
+  return out;
+}
+const isNightMinute = (m, prem) => { const [a, b] = [prem.from, prem.to].map(t => { const [h, mm] = t.split(':').map(Number); return h * 60 + mm; }); return a > b ? (m >= a || m < b) : (m >= a && m < b); };
+
+// ----- Richmond Olympic Oval / CUPE 718-09 agreement (2024-2028), auxiliary employees -----
+// Wage rate in effect on a date, from a list of {from:'YYYY-MM-DD', rate}
+function rateOn(job, date) {
+  const list = (job.rates || []).filter(r => r.from <= date).sort((a, b) => a.from.localeCompare(b.from));
+  return list.length ? Number(list[list.length - 1].rate) : Number(job.rate) || 0;
+}
+const weekStart = d => { const x = Date.parse(d + 'T00:00:00Z'), dow = new Date(x).getUTCDay(); return new Date(x - ((dow + 1) % 7) * 86400000).toISOString().slice(0, 10); }; // Saturday
+// Art. 9.01(a): 1.5x past 8 h/day or 40 h/week; 9.01(c): 2x past 12 h/day or 48 h/week.
+// Art. 11.06: auxiliary working a stat holiday gets overtime pay (1.5x, or 2x past 12 h) for all hours.
+// Art. 7.06: $1.00/h premium for hours between 7 pm and 7 am.
+// Art. 7.05: 12% of total earnings excluding overtime in lieu of benefits; 16% after 1,000 hours.
+function rooAuxEarnings(job, shifts) {
+  const prem = job.premium && job.premium.on ? job.premium : null;
+  const dailyOT = (Number(job.dailyHours) || 8) * 60;
+  const buckets = {}; // key -> {label, rate, minutes}
+  const add = (label, rate, mins) => { const k = label + '|' + rate.toFixed(4); (buckets[k] = buckets[k] || { label, rate, minutes: 0 }).minutes += mins; };
+  let premMin = 0, inLieu12 = 0, inLieu16 = 0, cum = (Number(job.hoursBefore) || 0) * 60;
+  const threshold = (Number(job.inLieuThreshold) || 1000) * 60;
+  const ordered = shifts.slice().sort((a, b) => (a.date + (a.start || '99:99')).localeCompare(b.date + (b.start || '99:99')));
+  const weekStraight = {}, weekTotal = {}, dayCount = {};
+  for (const s of ordered) {
+    const wk = weekStart(s.date), base = rateOn(job, s.date), stat = statName(s.date);
+    const mins = workedMinutes(s) || Array(Math.round(shiftHours(s) * 60)).fill(null); // hours-only entries: no clock times
+    for (const m of mins) {
+      const d = dayCount[s.date] = (dayCount[s.date] || 0) + 1;     // minute number within the day
+      const w = weekStraight[wk] || 0;                               // straight-time minutes so far this week
+      const wt = weekTotal[wk] = (weekTotal[wk] || 0) + 1;           // all minutes worked this week
+      let mult = 1;
+      if (d > 720 || wt > 2880) mult = 2; else if (d > dailyOT || w >= 2400) mult = 1.5;
+      if (stat && mult < 1.5) mult = 1.5;
+      if (mult === 1 && !stat) weekStraight[wk] = w + 1;
+      if (stat && !(d > dailyOT || w >= 2400)) weekStraight[wk] = w + 1; // stat hours still count toward the week
+      const label = stat ? (mult === 2 ? 'Stat holiday @ 2.0' : 'Stat holiday @ 1.5') : mult === 1 ? 'Regular' : mult === 1.5 ? 'OT @ 1.5' : 'OT @ 2.0';
+      add(label, base * mult, 1);
+      const isPrem = prem && m !== null && isNightMinute(m, prem);
+      if (isPrem) premMin++;
+      // in-lieu base: total earnings excluding overtime (straight time + shift premium); stat work is paid as overtime
+      const baseVal = (mult === 1 && !stat ? base / 60 : 0) + (isPrem ? prem.rate / 60 : 0);
+      if (cum < threshold) inLieu12 += baseVal; else inLieu16 += baseVal;
+      cum++;
+    }
+  }
+  return { buckets: Object.values(buckets), premHours: premMin / 60, inLieu12, inLieu16 };
+}
+
+// jobs: {id, name, rate, inLieuPct, union, duesPct, rules?: 'roo-aux', rates?, premium?, hoursBefore?, paidBreaks?}
+// ytd: {cpp, ei} already paid this year before this period
+function calcPeriod(jobs, shifts, ytd = { cpp: 0, ei: 0 }) {
+  const P = RATES.periods, lines = [];
+  let gross = 0, dues = 0, hours = 0;
+  for (const job of jobs) {
+    const js = shifts.filter(s => s.job === job.id).map(s => effShift(job, s));
+    let jobGross = 0, regAmt = 0;
+    if (job.rules === 'roo-aux') {
+      const b = rooAuxEarnings(job, js);
+      const order = ['Regular', 'OT @ 1.5', 'OT @ 2.0', 'Stat holiday @ 1.5', 'Stat holiday @ 2.0'];
+      b.buckets.sort((x, y) => order.indexOf(x.label) - order.indexOf(y.label) || x.rate - y.rate).forEach(k => {
+        const h = r2(k.minutes / 60), amt = r2(k.minutes / 60 * k.rate);
+        lines.push({ job: job.id, kind: 'earning', label: k.label, hours: h, rate: k.rate, amount: amt });
+        jobGross += amt; hours += k.minutes / 60;
+      });
+      if (b.premHours > 0) {
+        const h = r2(b.premHours), amt = r2(b.premHours * job.premium.rate);
+        lines.push({ job: job.id, kind: 'earning', label: 'Shift premium', hours: h, rate: job.premium.rate, amount: amt, noHours: true });
+        jobGross += amt;
+      }
+      [[12, b.inLieu12], [16, b.inLieu16]].forEach(([pct, base]) => {
+        if (base > 0.004) { const amt = r2(base * pct / 100); lines.push({ job: job.id, kind: 'earning', label: `${pct}% in lieu of benefits`, base: r2(base), amount: amt }); jobGross += amt; }
+      });
+    } else {
+      const byType = {};
+      for (const s of js) byType[s.type || 'regular'] = (byType[s.type || 'regular'] || 0) + shiftHours(s);
+      for (const t of Object.keys(PAY_TYPES)) {
+        const h = r2(byType[t] || 0); if (!h) continue;
+        const rate = job.rate * PAY_TYPES[t].mult, amt = r2(h * rate);
+        if (t === 'regular') regAmt = amt;
+        lines.push({ job: job.id, kind: 'earning', label: PAY_TYPES[t].label, hours: h, rate, amount: amt });
+        jobGross += amt; hours += h;
+      }
+      if (job.inLieuPct && regAmt) {
+        const amt = r2(regAmt * job.inLieuPct / 100);
+        lines.push({ job: job.id, kind: 'earning', label: `${job.inLieuPct}% in lieu of benefits`, base: regAmt, amount: amt });
+        jobGross += amt;
+      }
+    }
+    if (job.union && job.duesPct && jobGross) {
+      const d = r2(jobGross * job.duesPct / 100);
+      lines.push({ job: job.id, kind: 'deduction', label: `Union dues ${job.duesPct}%`, base: r2(jobGross), amount: d });
+      dues += d;
+    }
+    gross += jobGross;
+  }
+  gross = r2(gross);
+  // CPP
+  let cpp = gross > 0 ? r2(Math.max(0, gross - RATES.cpp.exempt / P) * RATES.cpp.rate) : 0;
+  cpp = Math.min(cpp, r2(Math.max(0, RATES.cpp.maxContrib - (ytd.cpp || 0))));
+  // EI
+  let ei = r2(gross * RATES.ei.rate);
+  ei = Math.min(ei, r2(Math.max(0, RATES.ei.maxPremium - (ytd.ei || 0))));
+  // Income tax (CRA T4127 annualizing method)
+  const cppEnhanced = cpp * (0.01 / RATES.cpp.rate);
+  const A = Math.max(0, P * (gross - dues - cppEnhanced));
+  const credBase = Math.min(P * cpp * (RATES.cpp.baseRate / RATES.cpp.rate), RATES.cpp.maxBase) + Math.min(P * ei, RATES.ei.maxPremium);
+  const fLow = RATES.fed.brackets[0][1];
+  const fedAnnual = Math.max(0, annualTax(A, RATES.fed.brackets) - fLow * RATES.fed.bpa - fLow * credBase - fLow * Math.min(A, RATES.fed.cea));
+  const bLow = RATES.bc.brackets[0][1];
+  let bcAnnual = Math.max(0, annualTax(A, RATES.bc.brackets) - bLow * RATES.bc.bpa - bLow * credBase);
+  const S = Math.max(0, RATES.bc.reductionMax - RATES.bc.reductionRate * Math.max(0, A - RATES.bc.reductionThreshold));
+  bcAnnual = Math.max(0, bcAnnual - Math.min(bcAnnual, S));
+  const fedTax = r2(fedAnnual / P), bcTax = r2(bcAnnual / P);
+  const totalDeductions = r2(cpp + ei + fedTax + bcTax + dues);
+  return { lines, hours: r2(hours), gross, cpp, ei, fedTax, bcTax, dues: r2(dues), totalDeductions, net: r2(gross - totalDeductions), annualTaxable: r2(A) };
+}
+
+
+// When meal breaks are paid at the worksite, the break stays in the paid (and worked) time.
+function effShift(job, s) { return job && job.paidBreaks && s.job === job.id ? { ...s, breakMin: 0 } : s; }
+
+// ----- Union hours running tab (Art. 5.01: auxiliaries accrue seniority after 1,000 hours worked) -----
+// start: {asOf:'YYYY-MM-DD', hours} = hours worked in the classification up to and including asOf (employer's records)
+// Only union-job shifts dated after asOf are added. onDate limits the count to shifts on or before that date.
+function seniorityTally(start, shifts, jobId, onDate, paidBreaks) {
+  let total = Number(start.hours) || 0, logged = 0, last = null; const byYear = {};
+  for (const s of shifts) {
+    if (s.job !== jobId || (start.asOf && s.date <= start.asOf) || (onDate && s.date > onDate)) continue;
+    const h = shiftHours(paidBreaks ? { ...s, breakMin: 0 } : s);
+    total += h; logged += h; byYear[s.date.slice(0, 4)] = (byYear[s.date.slice(0, 4)] || 0) + h;
+    if (!last || s.date > last) last = s.date;
+  }
+  return { total: r2(total), logged: r2(logged), byYear, lastWorked: last, reached1000: total >= 1000, seniorityHours: r2(Math.max(0, total - 1000)) };
+}
+
+// Biweekly periods anchored to the Oct 3, 2026 stub (Saturday start, paid Thursday after)
+const ANCHOR = Date.UTC(2026, 9, 3), DAY = 86400000;
+const iso = t => new Date(t).toISOString().slice(0, 10);
+function periodFor(dateStr) {
+  const t = Date.parse(dateStr + 'T00:00:00Z');
+  const k = Math.floor((t - ANCHOR) / (14 * DAY));
+  const start = ANCHOR + k * 14 * DAY;
+  return { start: iso(start), end: iso(start + 13 * DAY), payDate: iso(start + 19 * DAY) };
+}
+function shiftPeriod(p, n) { return periodFor(iso(Date.parse(p.start + 'T00:00:00Z') + n * 14 * DAY)); }
+
+// Compare stub with expected. Tolerance: 5¢ for earnings/CPP/EI/dues, $1 for income tax (payroll software rounding)
+function reconcile(expected, stub) {
+  const rows = [
+    ['hours', 'Hours paid', 0.01], ['gross', 'Gross earnings', 0.05], ['cpp', 'CPP', 0.05], ['ei', 'EI', 0.05],
+    ['fedTax', 'Federal income tax', 1], ['bcTax', 'BC income tax', 1], ['dues', 'Union dues', 0.05], ['net', 'Net pay', 1]
+  ];
+  return rows.filter(([k]) => stub[k] !== undefined && stub[k] !== '' && stub[k] !== null).map(([k, label, tol]) => {
+    const exp = expected[k], act = Number(stub[k]), diff = r2(act - exp);
+    return { key: k, label, expected: exp, actual: act, diff, status: Math.abs(diff) <= 0.005 ? 'match' : Math.abs(diff) <= tol ? 'close' : 'off' };
+  });
+}
+if (typeof module !== 'undefined') module.exports = { RATES, PAY_TYPES, calcPeriod, shiftHours, periodFor, shiftPeriod, reconcile, r2, bcStatHolidays, statName, rooAuxEarnings, rateOn, seniorityTally, effShift };
+
+return { RATES, PAY_TYPES, calcPeriod, shiftHours, periodFor, shiftPeriod, reconcile, r2, bcStatHolidays, statName, rooAuxEarnings, rateOn, seniorityTally, effShift };
+})();
+</script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const money = n => (n < 0 ? '−$' : '$') + Math.abs(n).toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const hrs = n => (Math.round(n * 100) / 100).toString();
+const fmtDate = (s, opts = { month: 'short', day: 'numeric' }) => new Date(s + 'T12:00:00').toLocaleDateString('en-CA', opts);
+const todayIso = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+
+// Facility Service Worker - Auxiliary: Richmond Olympic Oval / CUPE 718-09 agreement 2024-2028, Schedule "A"
+const FSW_RATES = [{ from: '2024-07-01', rate: 22.59 }, { from: '2025-07-01', rate: 23.49 }, { from: '2026-07-01', rate: 24.31 }, { from: '2027-07-01', rate: 25.16 }];
+// Hard-coded from the agreement; not editable in the app
+const FSW_PREMIUM = { on: true, rate: 1.00, from: '19:00', to: '07:00' }; // Art. 7.06
+const FSW_DAILY_OT_HOURS = 8;                                              // Art. 9.01(a)
+const APP_VERSION = '2.0.1';
+const DEFAULT_SETTINGS = {
+  jobs: [
+    { id: 'aux', name: 'Auxiliary', rate: null, inLieuPct: 12, union: false, duesPct: 0 },
+    { id: 'union', name: 'FSW · Union', union: true, duesPct: 2, rules: 'roo-aux', paidBreaks: true, dailyHours: 8,
+      rates: FSW_RATES, premium: FSW_PREMIUM }
+  ],
+  duesConfirmed: false,
+  seniority: { asOf: '2026-10-30', hours: 0, startSet: false, checks: [] },
+  ytd: { asOf: '', cpp: 0, ei: 0 }
+};
+let settings = structuredClone(DEFAULT_SETTINGS);
+// fill in anything an older saved copy doesn't have; union job is auxiliary under the agreement
+function normalize(raw) {
+  const d = structuredClone(DEFAULT_SETTINGS), s = Object.assign(d, structuredClone(raw || {}));
+  s.jobs = DEFAULT_SETTINGS.jobs.map(dj => {
+    const sj = structuredClone((raw && raw.jobs || []).find(j => j.id === dj.id) || {});
+    if (dj.id !== 'union') return Object.assign(structuredClone(dj), sj);
+    // union job follows the Oval agreement; drop settings left over from the placeholder agreement
+    ['rate', 'inLieuPct', 'onSeniorityList', 'name'].forEach(k => delete sj[k]);
+    // wage rates, shift differential and overtime always come from the agreement, whatever was saved before
+    return Object.assign(structuredClone(dj), sj, { rules: 'roo-aux', rates: structuredClone(FSW_RATES), premium: structuredClone(FSW_PREMIUM), dailyHours: FSW_DAILY_OT_HOURS });
+  });
+  const sen = Object.assign(structuredClone(DEFAULT_SETTINGS.seniority), s.seniority || {});
+  if (sen.byYear) { sen.hours = Object.values(sen.byYear).reduce((a, b) => a + (Number(b) || 0), 0); delete sen.byYear; }
+  s.seniority = sen; delete s.caConfirmed; delete s.inLieuConfirmed;
+  return s;
+}
+let periods = {}; // start -> {shifts:[], stub:{}}
+let cur = E.periodFor(todayIso());
+let selJob = 'aux';
+let store = null; // {saveSettings, savePeriod}
+
+// ---------- storage: on this phone only ----------
+const LS = 'shiftstub.v1', META = 'shiftstub.meta';
+let firstRun = false;
+function lsLoad() { try { const d = JSON.parse(localStorage.getItem(LS) || 'null'); if (d) { settings = normalize(d.settings); periods = d.periods || {}; } else firstRun = true; } catch (e) { firstRun = true; } }
+function lsSave() { try { localStorage.setItem(LS, JSON.stringify({ settings, periods })); setSync(syncLabel()); } catch (e) { setSync('Not saved: phone storage is full or blocked'); } }
+function meta() { try { return JSON.parse(localStorage.getItem(META) || '{}'); } catch (e) { return {}; } }
+function setMeta(m) { try { localStorage.setItem(META, JSON.stringify(Object.assign(meta(), m))); } catch (e) {} }
+function syncLabel() { const b = meta().lastBackup; return b ? `Backed up ${fmtDate(b)}` : 'Not backed up yet'; }
+async function initStore() {
+  lsLoad(); store = { saveSettings: async () => lsSave(), savePeriod: async () => lsSave() };
+  setSync(syncLabel()); $('welcome').hidden = !firstRun; render();
+  const lastV = meta().appVersion; if (!firstRun && lastV && lastV !== APP_VERSION) setTimeout(() => toast('Updated to v' + APP_VERSION), 400); setMeta({ appVersion: APP_VERSION });
+  try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (e) {}
+}
+function backupData() { return { app: 'shift-stub-tracker', version: 1, appVersion: APP_VERSION, exportedAt: new Date().toISOString(), settings, periods }; }
+async function doBackup() {
+  const name = `shift-stub-backup-${todayIso()}.json`, text = JSON.stringify(backupData(), null, 2);
+  const file = new File([text], name, { type: 'application/json' });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Shift & Stub backup' }); }
+    else { const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
+    setMeta({ lastBackup: todayIso() }); setSync(syncLabel()); render(); toast('Backup made. Save it to Files or iCloud Drive.');
+  } catch (e) { if (e && e.name === 'AbortError') toast('Backup cancelled'); else toast('Backup didn’t work: ' + (e && e.message || e)); }
+}
+let pendingRestore = null;
+function readBackupFile(file) {
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const d = JSON.parse(fr.result);
+      if (d.app !== 'shift-stub-tracker' || !d.settings || typeof d.periods !== 'object') throw new Error('bad');
+      pendingRestore = d;
+      const n = Object.values(d.periods).reduce((a, p) => a + ((p.shifts || []).length), 0);
+      $('restoreMsg').textContent = `Backup from ${d.exportedAt ? fmtDate(d.exportedAt.slice(0, 10), { month: 'short', day: 'numeric', year: 'numeric' }) : 'unknown date'} with ${n} shift${n === 1 ? '' : 's'}. Restoring replaces everything on this phone.`;
+      $('restoreConfirm').hidden = false; showTab('settings', 'restoreYes');
+    } catch (e) { toast('That file isn’t a Shift & Stub backup'); }
+  };
+  fr.readAsText(file);
+}
+function applyRestore() {
+  if (!pendingRestore) return;
+  settings = normalize(pendingRestore.settings); periods = pendingRestore.periods || {}; pendingRestore = null;
+  lsSave(); setMeta({ lastBackup: todayIso() }); firstRun = false; $('welcome').hidden = true; $('restoreConfirm').hidden = true;
+  render(); toast('Backup restored');
+}
+function setSync(t) { $('sync').textContent = t; }
+function toast(t) { const el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 1800); }
+
+// ---------- calculations ----------
+const jobById = id => settings.jobs.find(j => j.id === id);
+const dayBefore = d => new Date(Date.parse(d + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10);
+// union hours already worked before a pay period starts (for the 12% -> 16% switch at 1,000 hours)
+const jobsForCalc = start => settings.jobs.map(j => j.rules === 'roo-aux'
+  ? { ...j, hoursBefore: start ? E.seniorityTally(settings.seniority, allShifts(), 'union', dayBefore(start), j.paidBreaks).total : 0 }
+  : { ...j, rate: Number(j.rate) || 0 });
+const pdata = start => periods[start] || { shifts: [], stub: {} };
+function ytdBefore(start) {
+  const y = { cpp: Number(settings.ytd.cpp) || 0, ei: Number(settings.ytd.ei) || 0 };
+  if (!settings.ytd.asOf || start <= settings.ytd.asOf) return { cpp: 0, ei: 0 }; // earlier periods: caps not near
+  Object.keys(periods).sort().forEach(s => {
+    if (s > settings.ytd.asOf && s < start) {
+      const p = periods[s], r = E.calcPeriod(jobsForCalc(s), p.shifts || []);
+      y.cpp += p.stub && p.stub.cpp !== undefined && p.stub.cpp !== '' ? Number(p.stub.cpp) : r.cpp;
+      y.ei += p.stub && p.stub.ei !== undefined && p.stub.ei !== '' ? Number(p.stub.ei) : r.ei;
+    }
+  });
+  return y;
+}
+const calcCur = () => E.calcPeriod(jobsForCalc(cur.start), pdata(cur.start).shifts || [], ytdBefore(cur.start));
+
+// ---------- render ----------
+function render() {
+  $('appVersion').textContent = 'v' + APP_VERSION;
+  $('plabel').textContent = `${fmtDate(cur.start)} – ${fmtDate(cur.end, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  $('psub').textContent = `Payday ${fmtDate(cur.payDate, { weekday: 'short', month: 'short', day: 'numeric' })}`;
+  if (!$('fDate').value || $('fDate').value < cur.start || $('fDate').value > cur.end) $('fDate').value = (todayIso() >= cur.start && todayIso() <= cur.end) ? todayIso() : cur.start;
+  renderReminders(); renderSummary(); renderShifts(); renderExpected(); renderStubForm(); renderCompare(); renderSettings(); renderSeniority(); updateCalcHint();
+}
+
+function renderReminders() {
+  const box = $('reminders'); box.innerHTML = '';
+  const u = jobById('union');
+  const items = [];
+  if (!settings.duesConfirmed) items.push(['dues', `<b>Reminder:</b> union dues are set to a temporary <b>${u.duesPct}%</b>. The agreement doesn't set the amount (Art. 3.05). Update it from your first union pay stub.`]);
+  if (!(Number(jobById('aux').rate) > 0)) items.push(['arate', `<b>Add your non-union auxiliary hourly rate</b> in Settings.`]);
+  if (!settings.seniority.startSet) items.push(['sen', `<b>Add your Facility Service Worker hours so far</b> so the running tab (and the 1,000-hour mark) starts at the right number.`]);
+  const lb = meta().lastBackup, hasData = Object.keys(periods).length > 0;
+  if (hasData && (!lb || (Date.parse(todayIso()) - Date.parse(lb)) / 86400000 > 14)) items.unshift(['backup', `<b>Back up your data.</b> It's only stored on this phone. ${lb ? 'Last backup ' + fmtDate(lb) + '.' : 'You haven\u2019t made a backup yet.'}`]);
+  items.forEach(([k, html]) => {
+    const d = document.createElement('div'); d.className = 'reminder';
+    d.innerHTML = `<div>${html}</div><button data-k="${k}">Update</button>`;
+    d.querySelector('button').onclick = () => k === 'backup' ? showTab('settings', 'backupBtn') : k === 'sen' ? showTab('seniority', 'senAsOf') : showTab('settings', k === 'dues' ? 'uDues' : 'aRate');
+    box.appendChild(d);
+  });
+}
+
+function renderSummary() {
+  const r = calcCur();
+  const by = id => r.lines.filter(l => l.job === id && l.kind === 'earning');
+  const rows = settings.jobs.map(j => {
+    const h = by(j.id).reduce((a, l) => a + (l.noHours ? 0 : (l.hours || 0)), 0), g = by(j.id).reduce((a, l) => a + l.amount, 0);
+    return `<div class="jobrow"><span class="tag ${j.union ? 'union' : ''}">${esc(j.name)}</span><span class="num">${hrs(h)} hrs</span><span class="num">${money(g)}</span></div>`;
+  }).join('');
+  $('summary').innerHTML = `<h3>This pay period</h3>
+    <div class="totals"><div><small>Hours</small><span class="num">${hrs(r.hours)}</span></div>
+    <div><small>Gross</small><span class="num">${money(r.gross)}</span></div>
+    <div class="net"><small>Est. net</small><span class="num">${money(r.net)}</span></div></div>
+    <div class="jobsplit">${rows}</div>`;
+}
+
+function renderShifts() {
+  const list = (pdata(cur.start).shifts || []).slice().sort((a, b) => (a.date + (a.start || '')).localeCompare(b.date + (b.start || '')));
+  const el = $('shiftList');
+  if (!list.length) { el.innerHTML = `<p class="empty">No shifts logged for this period yet. Add your first one above.</p>`; return; }
+  el.innerHTML = '';
+  list.forEach(s => {
+    const j = jobById(s.job) || { name: s.job };
+    const row = document.createElement('div'); row.className = 'shift';
+    const times = s.start ? `${s.start}–${s.end}${s.breakMin ? ` · ${s.breakMin} min ${j.paidBreaks ? 'paid' : 'unpaid'} break` : ''}` : 'Hours only';
+    row.innerHTML = `<div class="when"><strong>${fmtDate(s.date, { weekday: 'short', month: 'short', day: 'numeric' })} <span class="tag ${j.union ? 'union' : ''}">${esc(j.name)}</span></strong>
+      <span>${times} · ${s.job === 'union' ? (E.statName(s.date) ? 'Stat holiday' : 'Agreement rules') : E.PAY_TYPES[s.type || 'regular'].label}${s.note ? ' · ' + esc(s.note) : ''}</span></div>
+      <span class="num hrs">${hrs(paidH(s))} h</span><button class="del" aria-label="Delete shift">✕</button>`;
+    const b = row.querySelector('.del');
+    b.onclick = () => {
+      if (!b.classList.contains('armed')) { b.classList.add('armed'); b.textContent = 'Delete'; setTimeout(() => { b.classList.remove('armed'); b.textContent = '✕'; }, 3000); return; }
+      const p = pdata(cur.start); p.shifts = p.shifts.filter(x => x.id !== s.id); periods[cur.start] = p; store.savePeriod(cur.start); render(); toast('Shift deleted');
+    };
+    el.appendChild(row);
+  });
+}
+
+function renderExpected() {
+  const r = calcCur();
+  let html = `<table><thead><tr><th>Item</th><th class="r">Hours</th><th class="r">Rate / base</th><th class="r">Amount</th></tr></thead><tbody>`;
+  settings.jobs.forEach(j => {
+    const ls = r.lines.filter(l => l.job === j.id);
+    if (!ls.length) return;
+    html += `<tr class="sub"><td colspan="4" style="padding-top:10px"><span class="tag ${j.union ? 'union' : ''}">${esc(j.name)}</span></td></tr>`;
+    ls.forEach(l => html += `<tr><td>${esc(l.label)}</td><td class="r num">${l.hours ? hrs(l.hours) : ''}</td><td class="r num">${l.rate ? fmtRate(l.rate) : l.base ? l.base.toFixed(2) : ''}</td><td class="r num">${l.kind === 'deduction' ? '−' : ''}${l.amount.toFixed(2)}</td></tr>`);
+  });
+  html += `<tr class="total"><td>Gross earnings</td><td class="r num">${hrs(r.hours)}</td><td></td><td class="r num">${r.gross.toFixed(2)}</td></tr>
+    <tr><td>CPP</td><td></td><td></td><td class="r num">−${r.cpp.toFixed(2)}</td></tr>
+    <tr><td>EI</td><td></td><td></td><td class="r num">−${r.ei.toFixed(2)}</td></tr>
+    <tr><td>Federal income tax</td><td></td><td></td><td class="r num">${r.fedTax ? "−" : ""}${r.fedTax.toFixed(2)}</td></tr>
+    <tr><td>BC income tax</td><td></td><td></td><td class="r num">${r.bcTax ? "−" : ""}${r.bcTax.toFixed(2)}</td></tr>
+    ${r.dues ? `<tr><td>Union dues (total)</td><td></td><td></td><td class="r num">−${r.dues.toFixed(2)}</td></tr>` : ''}
+    <tr class="total"><td>Net pay</td><td></td><td></td><td class="r num">${r.net.toFixed(2)}</td></tr></tbody></table>`;
+  $('expected').innerHTML = html;
+}
+
+const STUB_FIELDS = [['hours', 'Hours paid'], ['gross', 'Current earnings'], ['cpp', 'CPP'], ['ei', 'EI'], ['fedTax', 'Federal Inc Tax'], ['bcTax', 'BC Income Tax'], ['dues', 'Union dues'], ['net', 'Cheque amount (net)']];
+function renderStubForm() {
+  const stub = pdata(cur.start).stub || {};
+  const f = $('stubForm');
+  if (f.dataset.period === cur.start && f.contains(document.activeElement)) return; // don't wipe while typing
+  f.dataset.period = cur.start;
+  f.innerHTML = STUB_FIELDS.map(([k, label]) => `<div class="field"><label for="stub-${k}">${label}</label><input id="stub-${k}" class="num" type="number" step="0.01" inputmode="decimal" value="${stub[k] ?? ''}"></div>`).join('');
+}
+
+function renderCompare() {
+  const stub = pdata(cur.start).stub || {}, el = $('compare');
+  const rows = E.reconcile(calcCur(), stub);
+  if (!rows.length) { el.hidden = true; return; }
+  el.hidden = false;
+  const worst = rows.some(r => r.status === 'off') ? 'off' : rows.some(r => r.status === 'close') ? 'close' : 'match';
+  const msg = { match: 'Your stub matches what you logged.', close: 'Close enough: small differences are usually tax rounding.', off: 'Something doesn’t match. Check the red rows below.' }[worst];
+  const word = { match: 'Match', close: 'Close', off: 'Off' };
+  el.innerHTML = `<h2>Stub vs. expected</h2><div class="verdict ${worst}">${msg}</div>
+    <div class="tablewrap"><table><thead><tr><th>Item</th><th class="r">Expected</th><th class="r">Stub</th><th class="r">Diff</th><th></th></tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${r.label}</td><td class="r num">${r.key === 'hours' ? hrs(r.expected) : r.expected.toFixed(2)}</td><td class="r num">${r.key === 'hours' ? hrs(r.actual) : r.actual.toFixed(2)}</td><td class="r num">${r.diff > 0 ? '+' : ''}${r.diff.toFixed(2)}</td><td><span class="pill ${r.status}">${word[r.status]}</span></td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+function renderSettings() {
+  const p = $('jobsPanel');
+  if (p.contains(document.activeElement)) return;
+  const a = jobById('aux'), u = jobById('union');
+  p.innerHTML = `<h2>Departments</h2>
+    <h3><span class="tag">Auxiliary</span> non-union</h3>
+    <div class="grid2">
+      <div class="field"><label for="aRate">Hourly rate ($)</label><input id="aRate" class="num" type="number" step="0.01" inputmode="decimal" value="${a.rate ?? ''}"></div>
+      <div class="field"><label for="aInLieu">In lieu of benefits (%)</label><input id="aInLieu" class="num" type="number" step="0.5" inputmode="decimal" value="${a.inLieuPct}"></div>
+    </div>
+    <h3 style="margin-top:6px"><span class="tag union">${esc(u.name)}</span> Facility Service Worker – Auxiliary</h3>
+    <p class="hint">Richmond Olympic Oval / CUPE 718-09 agreement, July 1, 2024 – June 30, 2028.</p>
+    <div class="tablewrap"><table><thead><tr><th>From</th><th class="r">Hourly rate</th><th></th></tr></thead><tbody>
+      ${u.rates.map((r, i) => { const nextFrom = u.rates[i + 1] && u.rates[i + 1].from, now = todayIso() >= r.from && (!nextFrom || todayIso() < nextFrom);
+        return `<tr><td>${fmtDate(r.from, { month: 'short', day: 'numeric', year: 'numeric' })}</td><td class="r num">$${Number(r.rate).toFixed(2)}</td><td>${now ? '<span class="pill match">Now</span>' : ''}</td></tr>`; }).join('')}
+    </tbody></table></div>
+    <div class="tablewrap"><table><tbody>
+      <tr><td>Shift differential</td><td class="r num">$1.00/h, 7 pm–7 am</td></tr>
+      <tr><td>Overtime 1.5×</td><td class="r num">past 8 h/day or 40 h/week</td></tr>
+      <tr><td>Overtime 2×</td><td class="r num">past 12 h/day or 48 h/week</td></tr>
+      <tr><td>Stat holiday worked</td><td class="r num">overtime rates, all hours</td></tr>
+    </tbody></table></div>
+    <p class="hint">Rates, shift differential and overtime are set from the agreement and can't be changed here.</p>
+    <div class="grid2">
+      <div class="field"><label for="uDues">Union dues (% of union earnings)</label><input id="uDues" class="num" type="number" step="0.01" inputmode="decimal" value="${u.duesPct}"></div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="uPaidBrk" ${u.paidBreaks ? 'checked' : ''}> Meal breaks are paid (Letter of Understanding #1)</label>
+    <label class="toggle"><input type="checkbox" id="duesOk" ${settings.duesConfirmed ? 'checked' : ''}> The union dues % is the exact figure</label>
+    <details><summary class="hint">How union pay is worked out</summary><ul class="hint" style="padding-left:18px;margin:8px 0 0;display:grid;gap:4px">
+      <li>Rate changes automatically each July 1 (Schedule "A").</li>
+      <li>Overtime 1.5× past 8 h a day or 40 h a week; 2× past 12 h a day or 48 h a week (Art. 9.01). Weeks run Saturday to Friday.</li>
+      <li>Stat holidays worked are paid at overtime rates for every hour, including Boxing Day (Art. 11.01, 11.06).</li>
+      <li>In lieu of benefits: 12% of earnings excluding overtime, 16% after your first 1,000 hours (Art. 7.05). Switches automatically.</li>
+      <li>Paid meal break: LOU #1 pays Operations employees for meal breaks while they stay on call. Untick if your stub shows otherwise. The 15-minute rest breaks are always paid (Art. 8.09), so don't enter them.</li>
+    </ul></details>
+    <p class="hint">Dues are taken from union-job earnings only and lower your taxable income.</p>`;
+  if (!$('ytdAsOf').matches(':focus')) { $('ytdAsOf').value = settings.ytd.asOf; $('ytdCpp').value = settings.ytd.cpp; $('ytdEi').value = settings.ytd.ei; }
+  const R = E.RATES;
+  $('ratesTable').innerHTML = `<tbody>
+    <tr><td>CPP</td><td class="r">5.95% over $134.62/period · max $4,230.45</td></tr>
+    <tr><td>EI</td><td class="r">1.63% · max $1,123.07</td></tr>
+    <tr><td>Federal</td><td class="r">14% to $58,523 · BPA $${R.fed.bpa.toLocaleString()}</td></tr>
+    <tr><td>BC</td><td class="r">5.60% to $50,363 · BPA $${R.bc.bpa.toLocaleString()}</td></tr>
+    <tr><td>BC reduction</td><td class="r">up to $690</td></tr></tbody>`;
+}
+const paidH = s => E.shiftHours(E.effShift(jobById(s.job), s));
+function allShifts() { return Object.values(periods).flatMap(p => p.shifts || []); }
+function renderSeniority() {
+  const sen = settings.seniority, u = jobById('union'), t = E.seniorityTally(sen, allShifts(), 'union', null, u.paidBreaks);
+  const pct = Math.min(100, t.total / 10);
+  const daysSince = t.lastWorked ? Math.floor((Date.parse(todayIso()) - Date.parse(t.lastWorked)) / 86400000) : null;
+  const m = new Date(todayIso() + 'T12:00:00').getMonth(), nextList = m < 6 ? 'July' : 'January';
+  $('senSummary').innerHTML = `<h3><span class="tag union">${esc(u.name)}</span> hours worked</h3>
+    <div class="totals"><div><small>Total</small><span class="num">${hrs(t.total)}</span></div>
+      <div><small>Seniority hrs</small><span class="num">${hrs(t.seniorityHours)}</span></div>
+      <div><small>In lieu</small><span class="num">${t.reached1000 ? '16%' : '12%'}</span></div></div>
+    ${t.reached1000 ? `<p class="hint"><b>Past 1,000 hours.</b> You're accruing seniority (Art. 5.01c) and in lieu is 16% (Art. 7.05b). Seniority hours are the hours after your first 1,000.</p>` : `
+    <div style="display:grid;gap:6px"><div class="jobrow"><span>Toward 1,000 h</span><span></span><span class="num">${hrs(t.total)} / 1,000 h</span></div>
+      <div class="bar" role="img" aria-label="${Math.round(pct)}% of 1,000 hours"><i style="width:${pct}%"></i></div>
+      <p class="hint">${hrs(1000 - t.total)} more hours until you start accruing seniority and in lieu goes from 12% to 16%. Probation also ends at 1,000 hours or 18 months (Art. 6.01).</p></div>`}
+    <p class="hint">Seniority lists are posted in January and July (Art. 5.02). Next: ${nextList}.</p>
+    ${daysSince !== null ? `<p class="hint">Last union shift: ${fmtDate(t.lastWorked, { month: 'short', day: 'numeric', year: 'numeric' })}${daysSince > 120 ? ` · <b style="color:var(--bad)">${daysSince} days ago. Seniority is lost after 183 days inactive (Art. 5.03c).</b>` : ''}</p>` : ''}`;
+  // running tab
+  const starts = Object.keys(periods).filter(st => (periods[st].shifts || []).some(s => s.job === 'union' && s.date > sen.asOf)).sort();
+  let run = Number(sen.hours) || 0;
+  let rows = `<tr><td>Starting hours (to ${fmtDate(sen.asOf)})</td><td class="r num"></td><td class="r num">${hrs(run)}</td></tr>`;
+  starts.forEach(st => { const h = (periods[st].shifts || []).filter(s => s.job === 'union' && s.date > sen.asOf).reduce((a, s) => a + paidH(s), 0); const before = run; run += h;
+    const p = E.periodFor(st); rows += `<tr><td>${fmtDate(p.start)} – ${fmtDate(p.end)}${before < 1000 && run >= 1000 ? ' <span class="pill match">1,000 h</span>' : ''}</td><td class="r num">+${hrs(h)}</td><td class="r num">${hrs(run)}</td></tr>`; });
+  $('senTab').innerHTML = `<table><thead><tr><th>Pay period</th><th class="r">Union hrs</th><th class="r">Running total</th></tr></thead><tbody>${rows}</tbody></table>`;
+  // list checks
+  const checks = (sen.checks || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+  $('checks').innerHTML = checks.length ? `<table><thead><tr><th>List date</th><th class="r">List</th><th class="r">Mine</th><th class="r">Diff</th><th></th></tr></thead><tbody>${checks.map(c => {
+    const mine = E.seniorityTally(sen, allShifts(), 'union', c.date, jobById('union').paidBreaks).total, diff = E.r2(c.hours - mine), st = Math.abs(diff) < 0.01 ? 'match' : Math.abs(diff) <= 1 ? 'close' : 'off';
+    return `<tr><td>${fmtDate(c.date, { month: 'short', day: 'numeric', year: 'numeric' })}</td><td class="r num">${hrs(c.hours)}</td><td class="r num">${hrs(mine)}</td><td class="r num">${diff > 0 ? '+' : ''}${diff.toFixed(2)}</td><td><span class="pill ${st}">${{ match: 'Match', close: 'Close', off: 'Off' }[st]}</span></td></tr>`; }).join('')}</tbody></table>
+    ${c0(checks)}` : '';
+  if (!['senAsOf', 'senHours'].includes(document.activeElement && document.activeElement.id)) { $('senAsOf').value = sen.asOf; $('senHours').value = sen.hours ?? 0; }
+  if (!$('chkDate').value) $('chkDate').value = todayIso();
+}
+const c0 = checks => checks.some(c => Math.abs(c.hours - E.seniorityTally(settings.seniority, allShifts(), 'union', c.date, jobById('union').paidBreaks).total) > 1) ? '<p class="hint">If the list differs from your log, bring your shift log to your shop steward. Lists show total hours worked as a Facility Service Worker; seniority hours are those past 1,000.</p>' : '';
+const fmtRate = x => { const v = +x.toFixed(4), dp = (String(v).split('.')[1] || '').length; return v.toFixed(Math.max(2, dp)); };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// ---------- actions ----------
+function updateCalcHint() {
+  const j0 = jobById(selJob), h = E.shiftHours({ start: $('fStart').value, end: $('fEnd').value, breakMin: j0.paidBreaks ? 0 : $('fBreak').value });
+  $('fBreakLbl').textContent = j0.paidBreaks ? 'Meal break (paid)' : 'Meal break (unpaid)';
+  const j = jobById(selJob), mult = selJob === 'union' ? 1 : E.PAY_TYPES[$('fType').value].mult;
+  const stat = $('fDate').value && E.statName($('fDate').value);
+  const base = j.rules === 'roo-aux' ? E.rateOn(j, $('fDate').value || todayIso()) : (Number(j.rate) || 0), rate = base * mult;
+  $('fCalc').innerHTML = `<span class="num">${hrs(h)} h</span> × <span class="num">${money(rate)}</span> = <span class="num">${money(h * rate)}</span>${!(base > 0) ? ' · add the hourly rate in Settings' : ''}${selJob === 'union' ? ' at straight time, before overtime, premium and in lieu' : ''}${stat ? ` · <b>${stat}</b>${selJob === 'union' ? ': paid at overtime rates' : ' (stat holiday)'}` : ''}`;
+}
+['fStart', 'fEnd', 'fBreak', 'fType', 'fDate'].forEach(id => $(id).addEventListener('input', updateCalcHint));
+function setJob(j) { selJob = j; $('fTypeWrap').hidden = j === 'union'; $('fTypeAuto').hidden = j !== 'union'; $('jobAux').setAttribute('aria-pressed', j === 'aux'); $('jobUnion').setAttribute('aria-pressed', j === 'union'); updateCalcHint(); }
+$('jobAux').onclick = () => setJob('aux'); $('jobUnion').onclick = () => setJob('union');
+
+function addShift(s) {
+  const err = $('fErr'); err.hidden = true;
+  if (!s.date) { err.textContent = 'Pick a date for the shift.'; err.hidden = false; return; }
+  if (!(E.shiftHours(s) > 0)) { err.textContent = 'This shift has 0 hours. Check the start, end and break.'; err.hidden = false; return; }
+  const per = E.periodFor(s.date);
+  const p = periods[per.start] || { shifts: [], stub: {} };
+  p.shifts = (p.shifts || []).concat([{ id: Math.random().toString(36).slice(2, 10), ...s }]);
+  periods[per.start] = p; store.savePeriod(per.start);
+  if (per.start !== cur.start) cur = per;
+  render(); toast(`Added ${hrs(paidH(s))} h · ${jobById(s.job).name}`);
+}
+const typeFor = () => selJob === 'union' ? 'regular' : $('fType').value;
+$('addShift').onclick = () => addShift({ date: $('fDate').value, job: selJob, type: typeFor(), start: $('fStart').value, end: $('fEnd').value, breakMin: Number($('fBreak').value) || 0 });
+$('addHours').onclick = () => { addShift({ date: $('fDate').value, job: selJob, type: typeFor(), hours: Number($('fHours').value) || 0 }); $('fHours').value = ''; };
+
+$('saveStub').onclick = () => {
+  const stub = {}; STUB_FIELDS.forEach(([k]) => { const v = $('stub-' + k).value; if (v !== '') stub[k] = Number(v); });
+  const p = pdata(cur.start); p.stub = stub; periods[cur.start] = p; store.savePeriod(cur.start);
+  document.activeElement && document.activeElement.blur(); render(); $('compare').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+$('saveSettings').onclick = () => {
+  const a = jobById('aux'), u = jobById('union'), n = id => $(id).value === '' ? null : Number($(id).value);
+  a.rate = n('aRate'); a.inLieuPct = n('aInLieu') || 0;
+  u.duesPct = n('uDues') || 0;
+  u.paidBreaks = $('uPaidBrk').checked;
+  settings.duesConfirmed = $('duesOk').checked;
+  settings.ytd = { asOf: $('ytdAsOf').value || '', cpp: Number($('ytdCpp').value) || 0, ei: Number($('ytdEi').value) || 0 };
+  document.activeElement && document.activeElement.blur();
+  store.saveSettings(); render(); toast('Settings saved');
+};
+
+$('saveSen').onclick = () => {
+  settings.seniority.asOf = $('senAsOf').value || settings.seniority.asOf;
+  settings.seniority.hours = Number($('senHours').value) || 0;
+  settings.seniority.startSet = true; document.activeElement && document.activeElement.blur();
+  store.saveSettings(); render(); toast('Starting hours saved');
+};
+$('addCheck').onclick = () => {
+  const d = $('chkDate').value, h = Number($('chkHours').value);
+  if (!d || !($('chkHours').value !== '' && h >= 0)) { toast('Enter the list date and your hours on it'); return; }
+  settings.seniority.checks = (settings.seniority.checks || []).filter(c => c.date !== d).concat([{ date: d, hours: h }]);
+  $('chkHours').value = ''; store.saveSettings(); render(); toast('List compared');
+};
+$('backupBtn').onclick = doBackup;
+$('restoreBtn').onclick = $('welcomeRestore').onclick = () => { $('restoreFile').value = ''; $('restoreFile').click(); };
+$('restoreFile').onchange = e => { const f = e.target.files && e.target.files[0]; if (f) readBackupFile(f); };
+$('restoreYes').onclick = applyRestore;
+$('restoreNo').onclick = () => { pendingRestore = null; $('restoreConfirm').hidden = true; };
+$('welcomeFresh').onclick = () => { firstRun = false; $('welcome').hidden = true; lsSave(); showTab('settings', 'aRate'); };
+$('prev').onclick = () => { cur = E.shiftPeriod(cur, -1); render(); };
+$('next').onclick = () => { cur = E.shiftPeriod(cur, 1); render(); };
+
+function showTab(name, focusId) {
+  ['hours', 'pay', 'seniority', 'settings'].forEach(t => { $('tab-' + t).hidden = t !== name; $('t-' + t).setAttribute('aria-selected', t === name); });
+  window.scrollTo(0, 0);
+  if (focusId) setTimeout(() => { const el = $(focusId); if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); } }, 50);
+}
+$('t-hours').onclick = () => showTab('hours'); $('t-pay').onclick = () => showTab('pay'); $('t-settings').onclick = () => showTab('settings'); $('t-seniority').onclick = () => showTab('seniority');
+
+initStore();
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+})();
+</script>
+</body>
+</html>

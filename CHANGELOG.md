@@ -5,6 +5,14 @@ Version numbers: MAJOR.MINOR.PATCH
 - MINOR: new features
 - PATCH: fixes and small changes
 
+## v2.1.0 – November 3, 2026
+New: Calendar tab.
+- Month calendar showing every day worked, colour coded: teal = non-union, amber = FSW · Union, split = both jobs that day.
+- Each day shows total hours; stat holidays shown in red; today outlined.
+- Tap a day to see the shifts: job, times, break, pay type and hours, with totals per job.
+- "Add a shift on this day" button from the day view.
+- Month totals: days worked, non-union hours and union hours.
+
 ## v2.0.2 – November 3, 2026
 Fixes from comparing the app with the November 2026 pay stub.
 - Union dues set to 1.9%, worked out from the stub ($8.60 on $452.74). Dues are now taken from union pay without the in-lieu-of-benefits amount. The reminder stays until a second stub confirms it.

@@ -389,7 +389,16 @@ function rooAuxEarnings(job, shifts) {
 
 // jobs: {id, name, rate, inLieuPct, union, duesPct, rules?: 'roo-aux', rates?, premium?, hoursBefore?, paidBreaks?}
 // ytd: {cpp, ei} already paid this year before this period
-function calcPeriod(jobs, shifts, ytd = { cpp: 0, ei: 0 }) {
+// BC payroll figures change mid-2026: CRA T4032-BC / T4127 July 2026 use a prorated 6.14% lowest rate and a
+// prorated tax reduction of up to $805 for pay dates July 1 - December 31, 2026 (annual: 5.60% and $690).
+function bcPayrollRates(payDate) {
+  const bc = RATES.bc, b = bc.brackets.map(x => x.slice());
+  if (payDate && payDate >= '2026-07-01' && payDate <= '2026-12-31') { b[0][1] = 0.0614; return { brackets: b, reductionMax: 805 }; }
+  if (payDate && payDate >= '2026-01-01' && payDate < '2026-07-01') { b[0][1] = 0.0506; return { brackets: b, reductionMax: 575 }; }
+  return { brackets: b, reductionMax: bc.reductionMax };
+}
+// opts.payDate: cheque date of the period (sets which BC payroll figures apply)
+function calcPeriod(jobs, shifts, ytd = { cpp: 0, ei: 0 }, opts = {}) {
   const P = RATES.periods, lines = [];
   let gross = 0, dues = 0, hours = 0;
   for (const job of jobs) {
@@ -428,8 +437,10 @@ function calcPeriod(jobs, shifts, ytd = { cpp: 0, ei: 0 }) {
       }
     }
     if (job.union && job.duesPct && jobGross) {
-      const d = r2(jobGross * job.duesPct / 100);
-      lines.push({ job: job.id, kind: 'deduction', label: `Union dues ${job.duesPct}%`, base: r2(jobGross), amount: d });
+      // duesBase 'excl-inlieu': dues on union earnings without the in-lieu-of-benefits pay (matches the Nov 2026 stub)
+      const inLieu = lines.filter(l => l.job === job.id && /in lieu/.test(l.label)).reduce((a, l) => a + l.amount, 0);
+      const base = r2(job.duesBase === 'excl-inlieu' ? jobGross - inLieu : jobGross), d = r2(base * job.duesPct / 100);
+      lines.push({ job: job.id, kind: 'deduction', label: `Union dues ${job.duesPct}%`, base, amount: d });
       dues += d;
     }
     gross += jobGross;
@@ -447,9 +458,9 @@ function calcPeriod(jobs, shifts, ytd = { cpp: 0, ei: 0 }) {
   const credBase = Math.min(P * cpp * (RATES.cpp.baseRate / RATES.cpp.rate), RATES.cpp.maxBase) + Math.min(P * ei, RATES.ei.maxPremium);
   const fLow = RATES.fed.brackets[0][1];
   const fedAnnual = Math.max(0, annualTax(A, RATES.fed.brackets) - fLow * RATES.fed.bpa - fLow * credBase - fLow * Math.min(A, RATES.fed.cea));
-  const bLow = RATES.bc.brackets[0][1];
-  let bcAnnual = Math.max(0, annualTax(A, RATES.bc.brackets) - bLow * RATES.bc.bpa - bLow * credBase);
-  const S = Math.max(0, RATES.bc.reductionMax - RATES.bc.reductionRate * Math.max(0, A - RATES.bc.reductionThreshold));
+  const bcR = bcPayrollRates(opts.payDate), bLow = bcR.brackets[0][1];
+  let bcAnnual = Math.max(0, annualTax(A, bcR.brackets) - bLow * RATES.bc.bpa - bLow * credBase);
+  const S = Math.max(0, bcR.reductionMax - RATES.bc.reductionRate * Math.max(0, A - RATES.bc.reductionThreshold));
   bcAnnual = Math.max(0, bcAnnual - Math.min(bcAnnual, S));
   const fedTax = r2(fedAnnual / P), bcTax = r2(bcAnnual / P);
   const totalDeductions = r2(cpp + ei + fedTax + bcTax + dues);
@@ -496,9 +507,9 @@ function reconcile(expected, stub) {
     return { key: k, label, expected: exp, actual: act, diff, status: Math.abs(diff) <= 0.005 ? 'match' : Math.abs(diff) <= tol ? 'close' : 'off' };
   });
 }
-if (typeof module !== 'undefined') module.exports = { RATES, PAY_TYPES, calcPeriod, shiftHours, periodFor, shiftPeriod, reconcile, r2, bcStatHolidays, statName, rooAuxEarnings, rateOn, seniorityTally, effShift };
+if (typeof module !== 'undefined') module.exports = { RATES, PAY_TYPES, calcPeriod, shiftHours, periodFor, shiftPeriod, reconcile, r2, bcStatHolidays, statName, rooAuxEarnings, rateOn, seniorityTally, effShift, bcPayrollRates };
 
-return { RATES, PAY_TYPES, calcPeriod, shiftHours, periodFor, shiftPeriod, reconcile, r2, bcStatHolidays, statName, rooAuxEarnings, rateOn, seniorityTally, effShift };
+return { RATES, PAY_TYPES, calcPeriod, shiftHours, periodFor, shiftPeriod, reconcile, r2, bcStatHolidays, statName, rooAuxEarnings, rateOn, seniorityTally, effShift, bcPayrollRates };
 })();
 </script>
 <script>
@@ -514,11 +525,11 @@ const FSW_RATES = [{ from: '2024-07-01', rate: 22.59 }, { from: '2025-07-01', ra
 // Hard-coded from the agreement; not editable in the app
 const FSW_PREMIUM = { on: true, rate: 1.00, from: '19:00', to: '07:00' }; // Art. 7.06
 const FSW_DAILY_OT_HOURS = 8;                                              // Art. 9.01(a)
-const APP_VERSION = '2.0.1';
+const APP_VERSION = '2.0.2';
 const DEFAULT_SETTINGS = {
   jobs: [
     { id: 'aux', name: 'Auxiliary', rate: null, inLieuPct: 12, union: false, duesPct: 0 },
-    { id: 'union', name: 'FSW · Union', union: true, duesPct: 2, rules: 'roo-aux', paidBreaks: true, dailyHours: 8,
+    { id: 'union', name: 'FSW · Union', union: true, duesPct: 1.9, duesBase: 'excl-inlieu', rules: 'roo-aux', paidBreaks: true, dailyHours: 8,
       rates: FSW_RATES, premium: FSW_PREMIUM }
   ],
   duesConfirmed: false,
@@ -534,6 +545,8 @@ function normalize(raw) {
     if (dj.id !== 'union') return Object.assign(structuredClone(dj), sj);
     // union job follows the Oval agreement; drop settings left over from the placeholder agreement
     ['rate', 'inLieuPct', 'onSeniorityList', 'name'].forEach(k => delete sj[k]);
+    if (!sj.duesV202) { sj.duesPct = 1.9; sj.duesV202 = true; } // v2.0.2: 1.9% worked out from the Nov 2026 stub (was a 2% placeholder)
+    sj.duesBase = 'excl-inlieu';
     // wage rates, shift differential and overtime always come from the agreement, whatever was saved before
     return Object.assign(structuredClone(dj), sj, { rules: 'roo-aux', rates: structuredClone(FSW_RATES), premium: structuredClone(FSW_PREMIUM), dailyHours: FSW_DAILY_OT_HOURS });
   });
@@ -608,14 +621,14 @@ function ytdBefore(start) {
   if (!settings.ytd.asOf || start <= settings.ytd.asOf) return { cpp: 0, ei: 0 }; // earlier periods: caps not near
   Object.keys(periods).sort().forEach(s => {
     if (s > settings.ytd.asOf && s < start) {
-      const p = periods[s], r = E.calcPeriod(jobsForCalc(s), p.shifts || []);
+      const p = periods[s], r = E.calcPeriod(jobsForCalc(s), p.shifts || [], undefined, { payDate: E.periodFor(s).payDate });
       y.cpp += p.stub && p.stub.cpp !== undefined && p.stub.cpp !== '' ? Number(p.stub.cpp) : r.cpp;
       y.ei += p.stub && p.stub.ei !== undefined && p.stub.ei !== '' ? Number(p.stub.ei) : r.ei;
     }
   });
   return y;
 }
-const calcCur = () => E.calcPeriod(jobsForCalc(cur.start), pdata(cur.start).shifts || [], ytdBefore(cur.start));
+const calcCur = () => E.calcPeriod(jobsForCalc(cur.start), pdata(cur.start).shifts || [], ytdBefore(cur.start), { payDate: cur.payDate });
 
 // ---------- render ----------
 function render() {
@@ -630,7 +643,7 @@ function renderReminders() {
   const box = $('reminders'); box.innerHTML = '';
   const u = jobById('union');
   const items = [];
-  if (!settings.duesConfirmed) items.push(['dues', `<b>Reminder:</b> union dues are set to a temporary <b>${u.duesPct}%</b>. The agreement doesn't set the amount (Art. 3.05). Update it from your first union pay stub.`]);
+  if (!settings.duesConfirmed) items.push(['dues', `<b>Check union dues:</b> set to <b>${u.duesPct}%</b> of union pay (not counting in lieu), worked out from your Nov 2026 stub. Confirm it on your next stub, then tick the box in Settings.`]);
   if (!(Number(jobById('aux').rate) > 0)) items.push(['arate', `<b>Add your non-union auxiliary hourly rate</b> in Settings.`]);
   if (!settings.seniority.startSet) items.push(['sen', `<b>Add your Facility Service Worker hours so far</b> so the running tab (and the 1,000-hour mark) starts at the right number.`]);
   const lb = meta().lastBackup, hasData = Object.keys(periods).length > 0;
@@ -744,7 +757,7 @@ function renderSettings() {
     </tbody></table></div>
     <p class="hint">Rates, shift differential and overtime are set from the agreement and can't be changed here.</p>
     <div class="grid2">
-      <div class="field"><label for="uDues">Union dues (% of union earnings)</label><input id="uDues" class="num" type="number" step="0.01" inputmode="decimal" value="${u.duesPct}"></div>
+      <div class="field"><label for="uDues">Union dues (% of union pay, not counting in lieu)</label><input id="uDues" class="num" type="number" step="0.01" inputmode="decimal" value="${u.duesPct}"></div>
     </div>
     <label class="toggle"><input type="checkbox" id="uPaidBrk" ${u.paidBreaks ? 'checked' : ''}> Meal breaks are paid (Letter of Understanding #1)</label>
     <label class="toggle"><input type="checkbox" id="duesOk" ${settings.duesConfirmed ? 'checked' : ''}> The union dues % is the exact figure</label>
@@ -763,7 +776,8 @@ function renderSettings() {
     <tr><td>EI</td><td class="r">1.63% · max $1,123.07</td></tr>
     <tr><td>Federal</td><td class="r">14% to $58,523 · BPA $${R.fed.bpa.toLocaleString()}</td></tr>
     <tr><td>BC</td><td class="r">5.60% to $50,363 · BPA $${R.bc.bpa.toLocaleString()}</td></tr>
-    <tr><td>BC reduction</td><td class="r">up to $690</td></tr></tbody>`;
+    <tr><td>BC Jul–Dec 2026 payroll</td><td class="r">6.14% · reduction up to $805</td></tr>
+    <tr><td>BC reduction</td><td class="r">up to $690 (annual)</td></tr></tbody>`;
 }
 const paidH = s => E.shiftHours(E.effShift(jobById(s.job), s));
 function allShifts() { return Object.values(periods).flatMap(p => p.shifts || []); }

@@ -5,6 +5,12 @@ Version numbers: MAJOR.MINOR.PATCH
 - MINOR: new features
 - PATCH: fixes and small changes
 
+## v2.0.2 – November 3, 2026
+Fixes from comparing the app with the November 2026 pay stub.
+- Union dues set to 1.9%, worked out from the stub ($8.60 on $452.74). Dues are now taken from union pay without the in-lieu-of-benefits amount. The reminder stays until a second stub confirms it.
+- BC income tax uses the CRA's July–December 2026 payroll figures (prorated 6.14% lowest rate, tax reduction up to $805). January–June 2026 and 2027 use their own figures.
+- Result on the November stub: CPP, EI, dues and federal tax match; BC tax within $0.30; net pay within $0.30.
+
 ## v2.0.1 – November 3, 2026
 First numbered release.
 - Two jobs: non-union auxiliary (12% in lieu) and Facility Service Worker – Auxiliary (union).

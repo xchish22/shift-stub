@@ -5,6 +5,18 @@ Version numbers: MAJOR.MINOR.PATCH
 - MINOR: new features
 - PATCH: fixes and small changes
 
+## v2.2.0 – November 3, 2026
+New look and a Year screen, built from the approved mockups.
+- New iPhone-style design: large titles, frosted tab bar with icons (Home, Pay, Calendar, Seniority, Settings), dark mode.
+- Home: payday card with take-home (estimate, or the stub amount once entered), days to payday, Auxiliary/FSW split, gross and deductions; tiles for the 1,000-hour ring, hours this period and the next stat holiday; shifts with what each one earns.
+- Swipe a shift left (or tap ×) to delete it.
+- Add a shift: floating + button opens a sheet with quick picks, big time fields and a live "this shift earns" preview that counts overtime, premium and in lieu.
+- Quick picks: save shifts you work often; manage them in Settings.
+- Pay › Year: take-home so far, gross, deductions breakdown, take-home per cheque chart, pay history with Match/Close/Off/Estimate.
+- Year-to-date starting point (from any stub) replaces the old CPP/EI starting point, and a check of the stub's Year to Date column.
+- Calendar: paydays marked; tapping a day pops up its shifts and earnings.
+- No changes to the pay calculations (76 checks pass).
+
 ## v2.1.0 – November 3, 2026
 New: Calendar tab.
 - Month calendar showing every day worked, colour coded: teal = non-union, amber = FSW · Union, split = both jobs that day.

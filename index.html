@@ -8,317 +8,398 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Shift & Stub">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#16222b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eef3f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a131b" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
+<style>:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); } body { margin: 0; -webkit-text-size-adjust: 100%; }</style>
+</head>
+<body>
 <style>
-:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
-body { margin: 0; -webkit-text-size-adjust: 100%; }
-img { max-width: 100%; }
-[hidden] { display: none !important; }
-</style>
-<style>
-/* Layout: one narrow phone column; sticky period bar on top, tab bar fixed at bottom. */
+/* Layout: one phone column. Large iOS-style titles per tab, frosted tab bar fixed at the bottom, floating + button. */
 :root {
-  --bg: #f3f6f8; --surface: #ffffff; --fg: #12202b; --muted: #5b6b78; --line: #dbe3e9;
-  --accent: #0b6a88; --accent-ink: #ffffff; --accent-soft: #e1eff4;
-  --union: #a75a12; --union-soft: #f8ecdf;
-  --good: #1d7a46; --good-soft: #e3f3e9; --warn: #8a6100; --warn-soft: #fbf1d6; --bad: #b42318; --bad-soft: #fbe5e3;
-  --display: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
-  --body: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
-  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --bg: #eef3f6; --surface: #ffffff; --surface-2: #f6f9fb; --fg: #0f1e2a; --muted: #5a6b78; --line: #e1e8ed; --line-2: #d5dee4;
+  --accent: #0b6a88; --accent-ink: #ffffff; --accent-soft: #dceef4; --accent-tile: #cfe6ee;
+  --union: #a2560f; --union-strong: #c26a17; --union-soft: #f8e9da; --union-tile: #f6dfc6;
+  --hero: #0f1e2a; --hero-fg: #ffffff; --hero-muted: #b9c8d2; --hero-accent: #5cc0de; --hero-union: #f0a35a; --hero-line: rgba(255,255,255,.12);
+  --good: #1d7a46; --good-soft: #e1f2e8; --warn: #7a5600; --warn-soft: #fbf1d6; --bad: #b42318; --bad-soft: #fbe5e3;
+  --tabbar: rgba(255,255,255,.78); --shadow: 0 1px 2px rgba(15,30,42,.06); --shadow-lg: 0 12px 30px rgba(15,30,42,.22);
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0e171e; --surface: #16222b; --fg: #e6edf2; --muted: #93a4b1; --line: #26343f;
-  --accent: #5cc0de; --accent-ink: #06222c; --accent-soft: #143440;
-  --union: #f0a35a; --union-soft: #3a2614;
-  --good: #5fd08e; --good-soft: #123222; --warn: #f2c14e; --warn-soft: #362a0c; --bad: #ff8a80; --bad-soft: #3d1715; color-scheme: dark } }
+  --bg: #0a131b; --surface: #14212b; --surface-2: #101b24; --fg: #e8eff4; --muted: #9aabb8; --line: #22323e; --line-2: #2c3d4a;
+  --accent: #5cc0de; --accent-ink: #06222c; --accent-soft: #143440; --accent-tile: #15394a;
+  --union: #f0a35a; --union-strong: #f0a35a; --union-soft: #3a2614; --union-tile: #3d2a17;
+  --hero: #102a36; --hero-fg: #ffffff; --hero-muted: #a9bcc8; --hero-accent: #5cc0de; --hero-union: #f0a35a; --hero-line: rgba(255,255,255,.10);
+  --good: #5fd08e; --good-soft: #12301f; --warn: #f2c14e; --warn-soft: #362a0c; --bad: #ff8a80; --bad-soft: #3d1715;
+  --tabbar: rgba(20,33,43,.82); --shadow: none; --shadow-lg: 0 0 40px rgba(92,192,222,.12); color-scheme: dark } }
 :root[data-theme="dark"] {
-  --bg: #0e171e; --surface: #16222b; --fg: #e6edf2; --muted: #93a4b1; --line: #26343f;
-  --accent: #5cc0de; --accent-ink: #06222c; --accent-soft: #143440;
-  --union: #f0a35a; --union-soft: #3a2614;
-  --good: #5fd08e; --good-soft: #123222; --warn: #f2c14e; --warn-soft: #362a0c; --bad: #ff8a80; --bad-soft: #3d1715; color-scheme: dark }
+  --bg: #0a131b; --surface: #14212b; --surface-2: #101b24; --fg: #e8eff4; --muted: #9aabb8; --line: #22323e; --line-2: #2c3d4a;
+  --accent: #5cc0de; --accent-ink: #06222c; --accent-soft: #143440; --accent-tile: #15394a;
+  --union: #f0a35a; --union-strong: #f0a35a; --union-soft: #3a2614; --union-tile: #3d2a17;
+  --hero: #102a36; --hero-fg: #ffffff; --hero-muted: #a9bcc8; --hero-accent: #5cc0de; --hero-union: #f0a35a; --hero-line: rgba(255,255,255,.10);
+  --good: #5fd08e; --good-soft: #12301f; --warn: #f2c14e; --warn-soft: #362a0c; --bad: #ff8a80; --bad-soft: #3d1715;
+  --tabbar: rgba(20,33,43,.82); --shadow: none; --shadow-lg: 0 0 40px rgba(92,192,222,.12); color-scheme: dark }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-body { background: var(--bg); color: var(--fg); font: 15px/1.45 var(--body); }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
-.wrap { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
-h2 { font-size: 1.15rem; font-weight: 700; }
-h3 { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+body { background: var(--bg); color: var(--fg); font: 15px/1.4 var(--font); font-variant-numeric: tabular-nums; -webkit-tap-highlight-color: transparent; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { margin: 0; font-family: var(--font-display); text-wrap: balance; }
+.app { max-width: 560px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); padding-block: 22px 170px; }
+.tab { display: grid; gap: 16px; }
+.num { font-variant-numeric: tabular-nums; }
 
-/* Top bar */
-header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
-header.top .wrap { padding-block: 10px; display: grid; gap: 6px; }
-.brand { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.brand h1 { font-size: 1.05rem; font-weight: 800; letter-spacing: .01em; }
-.brand .sync { font-size: .75rem; color: var(--muted); }
-.period { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 6px; }
-.period button { height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); font-size: 1.2rem; }
-.period .label { text-align: center; line-height: 1.2; }
-.period .label strong { font-family: var(--display); font-size: 1.05rem; display: block; }
-.period .label span { font-size: .78rem; color: var(--muted); }
+/* Large title */
+.ttl { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+.ttl .eyebrow { display: block; font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .02em; text-transform: uppercase; }
+.ttl h1 { font-size: 34px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+.chip { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 999px; white-space: nowrap; background: var(--good-soft); color: var(--good); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.gray { background: var(--line); color: var(--muted); }
 
-main .wrap { padding-block: 14px 110px; display: grid; gap: 14px; }
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+.card { background: var(--surface); border-radius: 20px; padding: 16px; display: grid; gap: 12px; box-shadow: var(--shadow); min-width: 0; }
+.card h2 { font-size: 18px; font-weight: 800; }
+.sec { display: flex; justify-content: space-between; align-items: baseline; }
+.sec h2 { font-size: 20px; font-weight: 800; }
+.link { background: none; border: 0; padding: 0; color: var(--accent); font-weight: 600; font-size: 14px; }
+.hint { font-size: 13px; color: var(--muted); margin: 0; }
+.label { font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--muted); text-transform: uppercase; }
 
 /* Reminders */
-.reminder { display: flex; gap: 10px; align-items: flex-start; background: var(--warn-soft); color: var(--fg); border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); border-radius: 12px; padding: 10px 12px; font-size: .9rem; }
+.reminder { display: flex; gap: 10px; align-items: flex-start; background: var(--warn-soft); border-radius: 16px; padding: 12px 14px; font-size: 14px; }
 .reminder b { color: var(--warn); }
-.reminder button { margin-left: auto; flex: none; border: 0; background: transparent; color: var(--accent); font-weight: 600; padding: 2px 4px; }
+.reminder button { margin-left: auto; flex: none; border: 0; background: transparent; color: var(--accent); font-weight: 700; padding: 2px 4px; }
 
-/* Summary */
-.totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.totals div { display: grid; gap: 2px; min-width: 0; }
-.totals small { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-.totals .num { font-size: 1.15rem; font-weight: 500; }
-.totals .net .num { color: var(--accent); }
-.jobsplit { display: grid; gap: 6px; }
-.jobrow { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: .9rem; }
+/* Hero payday card */
+.hero { background: var(--hero); color: var(--hero-fg); border-radius: 24px; padding: 18px 18px 16px; display: grid; gap: 14px; box-shadow: var(--shadow-lg); }
+:root[data-theme="dark"] .hero { border: 1px solid rgba(92,192,222,.35); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hero { border: 1px solid rgba(92,192,222,.35); } }
+.hero .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.hero .kicker { font-size: 12px; font-weight: 700; letter-spacing: .08em; color: var(--hero-accent); text-transform: uppercase; }
+.hero .badge { font-size: 12px; font-weight: 700; color: #0f1e2a; background: var(--hero-accent); padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.hero .badge.ok { background: #8fd9a8; } .hero .badge.warn { background: #f2c14e; } .hero .badge.off { background: #ff8a80; }
+.hero .big { font-size: 46px; font-weight: 800; letter-spacing: -.03em; line-height: 1; font-family: var(--font-display); }
+.hero .cap { font-size: 14px; color: var(--hero-muted); }
+.hero .split { display: flex; height: 10px; gap: 3px; border-radius: 999px; overflow: hidden; }
+.hero .split i { display: block; border-radius: 999px; min-width: 6px; }
+.hero .legend2 { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: #d7e3ea; flex-wrap: wrap; }
+.hero .legend2 span { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 99px; display: inline-block; flex: none; }
+.hero .foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--hero-line); padding-top: 12px; font-size: 13px; color: var(--hero-muted); gap: 8px; }
+.hero .foot b { color: var(--hero-fg); }
+.hero .foot button { background: none; border: 0; color: var(--hero-accent); font-weight: 700; font-size: 13px; padding: 0; }
+.hero .nav { display: flex; gap: 6px; }
+.hero .nav button { width: 32px; height: 32px; border-radius: 10px; border: 0; background: rgba(255,255,255,.10); color: var(--hero-fg); display: grid; place-items: center; }
 
-.tag { display: inline-block; font-size: .7rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+/* Tiles */
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.tile { background: var(--surface); border-radius: 18px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; box-shadow: var(--shadow); min-width: 0; }
+.tile.center { align-items: center; text-align: center; }
+.tile .k { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--muted); text-transform: uppercase; }
+.tile .v { font-size: 28px; font-weight: 800; letter-spacing: -.02em; line-height: 1.05; font-family: var(--font-display); }
+.tile .v small { font-size: 14px; color: var(--muted); font-weight: 700; }
+.tile .s { font-size: 12px; color: var(--muted); line-height: 1.3; }
+.ring text { font-weight: 800; }
+
+/* Lists */
+.list { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; }
+.item { position: relative; overflow: hidden; border-top: 1px solid var(--line); }
+.item:first-child { border-top: 0; }
+.item .del { position: absolute; inset: 0 0 0 auto; width: 92px; border: 0; background: var(--bad); color: #fff; font-weight: 700; }
+.item .row { position: relative; background: var(--surface); display: flex; align-items: center; gap: 12px; padding: 13px 16px; transition: transform .18s ease; touch-action: pan-y; }
+.datebox { width: 44px; height: 44px; flex: none; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; background: var(--accent-soft); color: var(--accent); }
+.datebox.u { background: var(--union-soft); color: var(--union); }
+.datebox span { font-size: 10px; font-weight: 700; } .datebox b { font-size: 18px; font-weight: 800; }
+.mid { flex-grow: 1; display: grid; gap: 3px; min-width: 0; }
+.mid strong { font-size: 15px; font-weight: 700; }
+.mid span { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
+.end { display: grid; gap: 3px; justify-items: end; flex: none; }
+.end strong { font-size: 15px; } .end span { font-size: 13px; color: var(--muted); }
+.empty { padding: 22px 16px; text-align: center; color: var(--muted); display: grid; gap: 10px; justify-items: center; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .04em; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; text-transform: uppercase; }
 .tag.union { background: var(--union-soft); color: var(--union); }
-
-/* Shift list */
-.shifts { display: grid; gap: 0; }
-.shift { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
-.shift:first-child { border-top: 0; }
-.shift .when { min-width: 0; }
-.shift .when strong { display: block; font-weight: 600; }
-.shift .when span { color: var(--muted); font-size: .84rem; }
-.shift .hrs { font-size: 1rem; }
-.del { border: 1px solid var(--line); background: transparent; border-radius: 8px; height: 34px; min-width: 34px; color: var(--muted); padding: 0 8px; font-size: .8rem; }
-.bar { height: 10px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; }
-.bar i { display: block; height: 100%; background: var(--union); }
-.del.armed { background: var(--bad); border-color: var(--bad); color: #fff; }
-.empty { color: var(--muted); font-size: .9rem; }
+.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+.pill.match { background: var(--good-soft); color: var(--good); } .pill.close { background: var(--warn-soft); color: var(--warn); } .pill.off { background: var(--bad-soft); color: var(--bad); } .pill.est { background: var(--line); color: var(--muted); }
 
 /* Forms */
 .field { display: grid; gap: 4px; min-width: 0; grid-template-rows: 1fr auto; }
-.field label { align-self: end; }
-.field label { font-size: .78rem; font-weight: 600; color: var(--muted); }
-.field input, .field select { font-size: 16px; width: 100%; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); padding: 0 10px; }
-.field input.num { font-family: var(--mono); }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-.seg button { border: 0; background: var(--bg); height: 44px; font-weight: 600; }
-.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-.seg button.u[aria-pressed="true"] { background: var(--union); color: var(--surface); }
-.primary { height: 48px; border: 0; border-radius: 12px; background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 1rem; }
-.secondary { height: 40px; border: 1px solid var(--line); border-radius: 10px; background: transparent; font-weight: 600; padding: 0 14px; }
-.hint { font-size: .8rem; color: var(--muted); margin: 0; }
-.toggle { display: flex; gap: 10px; align-items: center; font-size: .92rem; }
-.toggle input { width: 20px; height: 20px; accent-color: var(--accent); }
-.err { color: var(--bad); font-size: .85rem; margin: 0; }
+.field label { font-size: 12px; font-weight: 700; color: var(--muted); align-self: end; }
+.field input, .field select { width: 100%; height: 46px; border-radius: 12px; border: 1px solid var(--line-2); background: var(--surface-2); padding: 0 12px; font-size: 16px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.btn { height: 50px; border: 0; border-radius: 14px; background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: 16px; }
+.btn.ghost { background: transparent; border: 1.5px solid var(--line-2); color: var(--fg); font-weight: 700; height: 44px; }
+.btn.danger { background: var(--bad); color: #fff; }
+.seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--line); border-radius: 14px; padding: 4px; gap: 4px; }
+.seg button { height: 40px; border: 0; border-radius: 11px; background: transparent; font-size: 15px; font-weight: 700; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(15,30,42,.12); }
+.seg button.u[aria-pressed="true"] { color: var(--union); }
+.toggle { display: flex; gap: 10px; align-items: center; font-size: 15px; }
+.toggle input { width: 22px; height: 22px; accent-color: var(--accent); flex: none; }
+.err { color: var(--bad); font-size: 14px; margin: 0; }
+details summary { cursor: pointer; font-size: 14px; font-weight: 600; color: var(--muted); }
 
-/* Stub-style tables */
+/* Tables */
 .tablewrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
-th { text-align: left; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 6px 4px; border-bottom: 1px solid var(--line); }
-td { padding: 7px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; padding: 6px 4px; border-bottom: 1px solid var(--line); }
+td { padding: 8px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
 td.r, th.r { text-align: right; }
-tr.sub td { color: var(--muted); font-size: .8rem; border-bottom: 0; padding-top: 0; }
-tr.total td { font-weight: 600; border-bottom: 0; border-top: 2px solid var(--fg); }
-.pill { display: inline-block; font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
-.pill.match { background: var(--good-soft); color: var(--good); }
-.pill.close { background: var(--warn-soft); color: var(--warn); }
-.pill.off { background: var(--bad-soft); color: var(--bad); }
-.verdict { border-radius: 12px; padding: 12px; font-weight: 600; }
-.verdict.match { background: var(--good-soft); color: var(--good); }
-.verdict.off { background: var(--bad-soft); color: var(--bad); }
-.verdict.close { background: var(--warn-soft); color: var(--warn); }
+tr.sub td { border-bottom: 0; padding-top: 12px; }
+tr.total td { font-weight: 800; border-bottom: 0; border-top: 2px solid var(--fg); }
+.verdict { border-radius: 14px; padding: 12px 14px; font-weight: 700; }
+.verdict.match { background: var(--good-soft); color: var(--good); } .verdict.off { background: var(--bad-soft); color: var(--bad); } .verdict.close { background: var(--warn-soft); color: var(--warn); }
+
+/* Period switch */
+.pswitch { display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; gap: 8px; background: var(--surface); border-radius: 16px; padding: 6px; box-shadow: var(--shadow); }
+.pswitch button { height: 40px; border-radius: 12px; border: 0; background: var(--surface-2); display: grid; place-items: center; }
+.pswitch div { text-align: center; line-height: 1.2; } .pswitch strong { display: block; font-size: 15px; } .pswitch span { font-size: 12px; color: var(--muted); }
+
+/* Year */
+.stack { display: flex; height: 12px; border-radius: 999px; overflow: hidden; gap: 2px; }
+.stack i { display: block; min-width: 3px; }
+.legend3 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; font-size: 13px; }
+.legend3 span { display: flex; justify-content: space-between; gap: 6px; }
+.legend3 span span { display: inline-flex; align-items: center; gap: 6px; }
+.bars { display: flex; align-items: flex-end; gap: 12px; height: 150px; padding: 0 4px; border-bottom: 1px solid var(--line); }
+.bars .b { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+.bars .b span { font-size: 11px; font-weight: 700; }
+.bars .b i { display: block; width: 100%; border-radius: 10px 10px 4px 4px; }
+.bars .b i.est { border: 2px dashed var(--muted); background: var(--surface-2) !important; }
+.blabels { display: flex; gap: 12px; padding: 0 4px; font-size: 11px; font-weight: 600; color: var(--muted); }
+.blabels span { flex: 1; text-align: center; min-width: 0; }
 
 /* Calendar */
-.calhead { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 6px; }
-.calhead button { height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); font-size: 1.2rem; }
-.calhead strong { text-align: center; font-family: var(--display); font-size: 1.1rem; }
-.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
-.cal .dow { text-align: center; font-size: .7rem; font-weight: 600; letter-spacing: .05em; color: var(--muted); text-transform: uppercase; padding-bottom: 2px; }
-.cal .day { position: relative; min-height: 54px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); padding: 4px 5px; display: grid; grid-template-rows: auto 1fr auto; text-align: left; font: inherit; color: inherit; min-width: 0; }
-.cal .day .n { font-size: .8rem; font-weight: 600; }
-.cal .day .h { font-family: var(--mono); font-size: .72rem; justify-self: end; white-space: nowrap; }
-.cal .day.aux { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
-.cal .day.uni { background: var(--union-soft); border-color: color-mix(in srgb, var(--union) 45%, transparent); }
-.cal .day.both { background: linear-gradient(135deg, var(--accent-soft) 50%, var(--union-soft) 50%); border-color: var(--line); }
-.cal .day .bars { display: flex; gap: 3px; align-self: end; }
-.cal .day .bars i { display: block; height: 5px; flex: 1; border-radius: 3px; }
-.cal .day .bars .a { background: var(--accent); } .cal .day .bars .u { background: var(--union); }
-.cal .day.today { outline: 2px solid var(--fg); outline-offset: -1px; }
+.calhead { display: flex; justify-content: flex-end; gap: 8px; }
+.calhead button { width: 40px; height: 40px; border-radius: 12px; border: 0; background: var(--surface); display: grid; place-items: center; box-shadow: var(--shadow); }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.cal .dow { text-align: center; font-size: 11px; font-weight: 700; color: var(--muted); }
+.cal .day { height: 56px; border: 0; border-radius: 12px; padding: 5px 6px; display: flex; flex-direction: column; justify-content: space-between; text-align: left; background: var(--surface); min-width: 0; }
+.cal .day .n { font-size: 13px; font-weight: 700; }
+.cal .day .h { font-size: 11px; font-weight: 700; align-self: flex-end; white-space: nowrap; }
+.cal .day .b { display: flex; gap: 2px; width: 100%; min-height: 4px; }
+.cal .day .b i { flex: 1; height: 4px; border-radius: 3px; display: block; }
+.cal .day.aux { background: var(--accent-tile); } .cal .day.uni { background: var(--union-tile); }
+.cal .day.both { background: linear-gradient(135deg, var(--accent-tile) 50%, var(--union-tile) 50%); }
+.cal .day.today { outline: 2px solid var(--fg); outline-offset: -2px; }
 .cal .day.stat .n { color: var(--bad); }
+.cal .day.pay { background: var(--hero); color: var(--hero-fg); }
+.cal .day.pay .h { color: var(--hero-accent); font-size: 9px; }
 .cal .day.out { visibility: hidden; }
-.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: .8rem; color: var(--muted); align-items: center; }
+.ia { background: var(--accent); } .iu { background: var(--union-strong); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12px; color: var(--muted); align-items: center; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
-.legend i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
-.sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 20; display: flex; align-items: flex-end; justify-content: center; }
-.sheet { background: var(--surface); color: var(--fg); width: 100%; max-width: 560px; border-radius: 18px 18px 0 0; padding: 16px max(16px, env(safe-area-inset-left, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 10px; max-height: 80vh; overflow-y: auto; }
-.sheet .top { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
-.sheet .x { border: 1px solid var(--line); background: transparent; border-radius: 10px; height: 36px; min-width: 36px; font-size: 1rem; }
-@media (prefers-reduced-motion: no-preference) { .sheet { animation: up .18s ease-out; } @keyframes up { from { transform: translateY(30px); opacity: .6; } to { transform: none; opacity: 1; } } }
+.legend i { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+.dline { display: flex; align-items: center; gap: 10px; }
+.dline .bar { width: 4px; align-self: stretch; border-radius: 4px; }
 
-/* Tab bar */
-nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
-nav.tabs .wrap { display: grid; grid-template-columns: repeat(5, 1fr); padding-block: 6px; gap: 4px; }
-nav.tabs button { border: 0; background: transparent; height: 46px; border-radius: 10px; font-weight: 600; color: var(--muted); font-size: .8rem; padding: 0 2px; min-width: 0; }
-nav.tabs button[aria-selected="true"] { background: var(--accent-soft); color: var(--accent); }
-.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 8px 14px; border-radius: 999px; font-size: .88rem; z-index: 6; }
-details summary { cursor: pointer; font-weight: 600; }
-@media (max-width: 380px) { .grid3 { grid-template-columns: 1fr 1fr; } }
-@media (prefers-reduced-motion: no-preference) { .toast { transition: opacity .2s; } }
+/* Bottom sheets */
+.sheet-bg { position: fixed; inset: 0; background: rgba(5,12,18,.45); z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
+.sheet { background: var(--surface-2); color: var(--fg); width: 100%; max-width: 560px; border-radius: 26px 26px 0 0; padding: 10px max(20px, env(safe-area-inset-left, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-right, 0px)); display: grid; gap: 14px; max-height: 92vh; overflow-y: auto; box-shadow: 0 -10px 30px rgba(0,0,0,.25); }
+.grab { width: 40px; height: 5px; border-radius: 99px; background: var(--line-2); justify-self: center; }
+.sheet .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.sheet .top h2 { font-size: 17px; font-weight: 800; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button { height: 36px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line-2); background: var(--surface); font-size: 14px; font-weight: 600; }
+.chips button.u { border-color: color-mix(in srgb, var(--union) 40%, transparent); }
+.chips button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.chips button.u[aria-pressed="true"] { border-color: var(--union); background: var(--union-soft); color: var(--union); }
+.chips button.add { border-style: dashed; background: transparent; color: var(--muted); }
+.formcard { background: var(--surface); border-radius: 18px; box-shadow: var(--shadow); display: grid; }
+.formcard .line { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0 16px; min-height: 54px; border-top: 1px solid var(--line); }
+.formcard .line:first-child { border-top: 0; }
+.formcard .line label { font-size: 15px; font-weight: 600; }
+.formcard .line input, .formcard .line select { border: 0; background: transparent; text-align: right; font-size: 16px; font-weight: 700; color: var(--accent); min-width: 0; max-width: 60%; height: 44px; }
+.formcard .times { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+.formcard .times .t { display: grid; gap: 2px; padding: 10px 16px; }
+.formcard .times .t + .t { border-left: 1px solid var(--line); }
+.formcard .times label { font-size: 12px; font-weight: 700; color: var(--muted); }
+.formcard .times input { border: 0; background: transparent; font-size: 22px; font-weight: 800; padding: 0; width: 100%; min-width: 0; color: var(--fg); }
+.preview { background: var(--hero); color: var(--hero-fg); border-radius: 20px; padding: 16px; display: grid; gap: 10px; }
+.preview .k { font-size: 12px; font-weight: 700; letter-spacing: .08em; color: var(--hero-union); }
+.preview .k.a { color: var(--hero-accent); }
+.preview .amt { font-size: 34px; font-weight: 800; letter-spacing: -.02em; line-height: 1; font-family: var(--font-display); }
+.preview .rows { display: grid; gap: 6px; font-size: 14px; color: #c9d6de; }
+.preview .rows div { display: flex; justify-content: space-between; gap: 8px; }
+.preview .rows b { color: #fff; font-weight: 600; }
+.preview .note { font-size: 12px; color: #9aabb8; }
+.preview .badge { font-size: 12px; font-weight: 700; color: #0f1e2a; background: #8fd9a8; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.preview .badge.ot { background: #f2c14e; }
+
+/* Floating button and tab bar */
+.fab { position: fixed; right: max(20px, calc(env(safe-area-inset-right, 0px) + 12px)); bottom: calc(100px + env(safe-area-inset-bottom, 0px)); width: 60px; height: 60px; border-radius: 20px; border: 0; background: var(--accent); display: grid; place-items: center; box-shadow: 0 10px 24px rgba(11,106,136,.4); z-index: 8; }
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; background: var(--tabbar); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-top: 1px solid var(--line); padding: 8px max(10px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); }
+.tabbar .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.tabbar button { border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--muted); padding: 2px 0; min-width: 0; }
+.tabbar button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tabbar button[aria-selected="true"] { color: var(--accent); font-weight: 700; }
+.tabbar button[aria-selected="true"] svg .fill { fill: var(--accent-soft); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(176px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 9px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; z-index: 40; white-space: nowrap; }
+@media (prefers-reduced-motion: no-preference) {
+  .sheet { animation: up .2s ease-out; } @keyframes up { from { transform: translateY(40px); opacity: .6; } to { transform: none; opacity: 1; } }
+  .tab:not([hidden]) { animation: fade .18s ease-out; } @keyframes fade { from { opacity: .4; } to { opacity: 1; } }
+}
+@media (max-width: 370px) { .hero .big { font-size: 40px; } .tile .v { font-size: 24px; } }
 </style>
 
-</head>
-<body>
-<header class="top">
-  <div class="wrap">
-    <div class="brand"><h1>Shift &amp; Stub Tracker</h1><span class="sync" id="sync">Loading…</span></div>
-    <div class="period">
-      <button id="prev" aria-label="Previous pay period">‹</button>
-      <div class="label"><strong id="plabel">–</strong><span id="psub">–</span></div>
-      <button id="next" aria-label="Next pay period">›</button>
+<div class="app">
+  <!-- HOME -->
+  <section class="tab" id="tab-home">
+    <div class="ttl"><div><span class="eyebrow" id="homeDate"></span><h1>Home</h1></div><span class="chip" id="sync">Loading…</span></div>
+    <div class="card" id="welcome" hidden>
+      <h2>Welcome</h2>
+      <p class="hint">Your hours and pay stay on this phone. Already have a backup file? Restore it to pick up where you left off.</p>
+      <button class="btn" id="welcomeRestore">Restore from a backup file</button>
+      <button class="btn ghost" id="welcomeFresh">Start fresh</button>
     </div>
-  </div>
-</header>
-
-<main><div class="wrap">
-  <div class="panel" id="welcome" hidden>
-    <h2>Welcome</h2>
-    <p class="hint" style="font-size:.9rem">Your hours and pay stay on this phone. Already have a backup file? Restore it to pick up where you left off.</p>
-    <button class="primary" id="welcomeRestore">Restore from a backup file</button>
-    <button class="secondary" id="welcomeFresh">Start fresh</button>
-  </div>
-  <div id="reminders" style="display:grid;gap:8px"></div>
-
-  <!-- HOURS -->
-  <section id="tab-hours" style="display:grid;gap:14px">
-    <div class="panel" id="summary"></div>
-    <div class="panel">
-      <h2>Add a shift</h2>
-      <div class="seg" role="group" aria-label="Department">
-        <button id="jobAux" aria-pressed="true">Auxiliary</button>
-        <button id="jobUnion" class="u" aria-pressed="false">FSW · Union</button>
-      </div>
-      <div class="grid2">
-        <div class="field"><label for="fDate">Date</label><input type="date" id="fDate"></div>
-        <div class="field" id="fTypeAuto" hidden><label>Pay type</label><p class="hint" style="margin:6px 0 0">Automatic: rate, overtime, stats &amp; premium from the Oval agreement</p></div>
-        <div class="field" id="fTypeWrap"><label for="fType">Pay type</label>
-          <select id="fType"><option value="regular">Regular</option><option value="ot15">Overtime 1.5×</option><option value="ot2">Overtime 2×</option><option value="stat">Stat holiday pay</option></select></div>
-      </div>
-      <div class="grid3">
-        <div class="field"><label for="fStart">Start</label><input type="time" id="fStart" value="09:00"></div>
-        <div class="field"><label for="fEnd">End</label><input type="time" id="fEnd" value="17:00"></div>
-        <div class="field"><label for="fBreak" id="fBreakLbl">Meal break (unpaid)</label><input type="number" id="fBreak" class="num" inputmode="numeric" min="0" step="5" value="30"></div>
-      </div>
-      <p class="hint" id="fCalc"></p>
-      <p class="err" id="fErr" hidden></p>
-      <button class="primary" id="addShift">Add shift</button>
-      <details><summary class="hint">Only know the total hours?</summary>
-        <div class="grid2" style="margin-top:8px">
-          <div class="field"><label for="fHours">Hours</label><input type="number" id="fHours" class="num" inputmode="decimal" min="0" step="0.25" placeholder="e.g. 7.5"></div>
-          <div class="field" style="align-self:end"><button class="secondary" id="addHours" style="height:44px">Add hours</button></div>
-        </div>
-      </details>
-    </div>
-    <div class="panel"><h2>Shifts this period</h2><div class="shifts" id="shiftList"></div></div>
+    <div id="reminders" style="display:grid;gap:8px"></div>
+    <div class="hero" id="hero"></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="sec"><h2>Shifts this period</h2><button class="link" id="toCal">See calendar</button></div>
+    <div class="list" id="shiftList"></div>
+    <p class="hint" style="text-align:center">Swipe a shift left to delete it.</p>
   </section>
 
-  <!-- PAY CHECK -->
-  <section id="tab-pay" style="display:grid;gap:14px" hidden>
-    <div class="panel"><h2>Expected pay</h2><p class="hint">Calculated from your logged shifts, 2026 BC rates.</p><div class="tablewrap" id="expected"></div></div>
-    <div class="panel">
-      <h2>Your pay stub</h2>
-      <p class="hint">Type in the numbers from the stub for this period. Leave blank anything not on it.</p>
-      <div class="grid2" id="stubForm"></div>
-      <button class="primary" id="saveStub">Check my pay</button>
+  <!-- PAY -->
+  <section class="tab" id="tab-pay" hidden>
+    <div class="ttl"><div><span class="eyebrow">Pay</span><h1 id="payTitle">This cheque</h1></div></div>
+    <div class="seg" role="group" aria-label="Pay view"><button id="pvCheque" aria-pressed="true">This cheque</button><button id="pvYear" aria-pressed="false">Year</button></div>
+    <div id="payCheque" style="display:grid;gap:16px">
+      <div class="pswitch"><button id="pPrev" aria-label="Previous pay period"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><div><strong id="pLabel"></strong><span id="pSub"></span></div><button id="pNext" aria-label="Next pay period"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+      <div class="card"><h2>Expected pay</h2><p class="hint">From your logged shifts, using 2026 BC payroll rates.</p><div class="tablewrap" id="expected"></div></div>
+      <div class="card">
+        <h2>Your pay stub</h2>
+        <p class="hint">Type in the numbers from the stub for this period. Leave blank anything not on it.</p>
+        <div class="grid2" id="stubForm"></div>
+        <button class="btn" id="saveStub">Check my pay</button>
+      </div>
+      <div class="card" id="compare" hidden></div>
     </div>
-    <div class="panel" id="compare" hidden></div>
+    <div id="payYear" style="display:grid;gap:16px" hidden>
+      <div class="card" id="ytdHero"></div>
+      <div class="card"><h2>Take-home per cheque</h2><div id="ytdChart"></div></div>
+      <div class="sec"><h2>Pay history</h2></div>
+      <div class="list" id="ytdHistory"></div>
+      <div class="card">
+        <h2>Check the stub's year-to-date column</h2>
+        <p class="hint">Enter the Year to Date figures from a stub. The app compares them with its own running total.</p>
+        <div class="field"><label for="ycPay">Stub pay date</label><select id="ycPay"></select></div>
+        <div class="grid2" id="ycForm"></div>
+        <button class="btn" id="ycSave">Compare</button>
+        <div id="ycResult"></div>
+      </div>
+      <div class="card">
+        <h2>Starting point</h2>
+        <p class="hint">Year-to-date figures from one pay stub (not every line is needed). The app counts forward from its pay date. Also used so CPP and EI stop at the yearly maximum.</p>
+        <div class="field"><label for="ysAsOf">Stub pay date</label><input type="date" id="ysAsOf"></div>
+        <div class="grid2" id="ysForm"></div>
+        <button class="btn" id="ysSave">Save starting point</button>
+      </div>
+    </div>
   </section>
 
   <!-- CALENDAR -->
-  <section id="tab-calendar" style="display:grid;gap:14px" hidden>
-    <div class="panel">
-      <div class="calhead"><button id="calPrev" aria-label="Previous month">‹</button><strong id="calLabel"></strong><button id="calNext" aria-label="Next month">›</button></div>
-      <div class="legend"><span><i style="background:var(--accent)"></i>Auxiliary (non-union)</span><span><i style="background:var(--union)"></i>FSW · Union</span><span><i style="background:linear-gradient(135deg,var(--accent) 50%,var(--union) 50%)"></i>Both</span><span><b style="color:var(--bad)">12</b>&nbsp;Stat holiday</span></div>
-      <div class="cal" id="cal" role="grid"></div>
-      <p class="hint">Tap a day to see the hours worked.</p>
-    </div>
-    <div class="panel" id="calTotals"></div>
+  <section class="tab" id="tab-calendar" hidden>
+    <div class="ttl"><div><span class="eyebrow" id="calYear">Calendar</span><h1 id="calLabel"></h1></div>
+      <div class="calhead"><button id="calPrev" aria-label="Previous month"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><button id="calNext" aria-label="Next month"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div></div>
+    <div class="tiles" id="calTotals"></div>
+    <div class="cal" id="cal"></div>
+    <div class="legend"><span><i class="ia"></i>Auxiliary</span><span><i class="iu"></i>FSW · Union</span><span><i style="background:linear-gradient(135deg,var(--accent) 50%,var(--union-strong) 50%)"></i>Both</span><span><b style="color:var(--bad)">11</b> Stat</span><span><i style="background:var(--hero)"></i>Payday</span></div>
+    <div class="card" id="calDay"></div>
   </section>
 
   <!-- SENIORITY -->
-  <section id="tab-seniority" style="display:grid;gap:14px" hidden>
-    <div class="panel" id="senSummary"></div>
-    <div class="panel">
+  <section class="tab" id="tab-seniority" hidden>
+    <div class="ttl"><div><span class="eyebrow">FSW · Union</span><h1>Seniority</h1></div></div>
+    <div class="card" id="senSummary"></div>
+    <div class="card">
       <h2>Check a seniority list</h2>
       <p class="hint">Lists are posted on the Intranet in January and July. Enter the date the list counts up to and the total hours it shows for you.</p>
       <div class="grid2">
         <div class="field"><label for="chkDate">List date (hours up to)</label><input type="date" id="chkDate"></div>
-        <div class="field"><label for="chkHours">Your hours on the list</label><input type="number" id="chkHours" class="num" step="0.01" inputmode="decimal"></div>
+        <div class="field"><label for="chkHours">Your hours on the list</label><input type="number" id="chkHours" step="0.01" inputmode="decimal"></div>
       </div>
-      <button class="secondary" id="addCheck">Compare</button>
+      <button class="btn ghost" id="addCheck">Compare</button>
       <div class="tablewrap" id="checks"></div>
     </div>
-    <div class="panel"><h2>Running tab by pay period</h2><div class="tablewrap" id="senTab"></div></div>
-    <div class="panel">
+    <div class="card"><h2>Running tab by pay period</h2><div class="tablewrap" id="senTab"></div></div>
+    <div class="card">
       <h2>Hours before logging</h2>
       <p class="hint">Total hours worked as a Facility Service Worker up to and including this date, from your pay stubs or a seniority list. Only shifts after this date are added on top.</p>
       <div class="grid2">
         <div class="field"><label for="senAsOf">Up to (date)</label><input type="date" id="senAsOf"></div>
-        <div class="field"><label for="senHours">Hours worked</label><input type="number" id="senHours" class="num" step="0.01" inputmode="decimal"></div>
+        <div class="field"><label for="senHours">Hours worked</label><input type="number" id="senHours" step="0.01" inputmode="decimal"></div>
       </div>
-      <button class="primary" id="saveSen">Save starting hours</button>
+      <button class="btn" id="saveSen">Save starting hours</button>
     </div>
   </section>
 
   <!-- SETTINGS -->
-  <section id="tab-settings" style="display:grid;gap:14px" hidden>
-    <div class="panel" id="jobsPanel"></div>
-    <div class="panel">
-      <h2>Year-to-date starting point</h2>
-      <p class="hint">Copy these from your latest pay stub. Used so CPP and EI stop at the yearly maximum.</p>
-      <div class="grid3">
-        <div class="field"><label for="ytdAsOf">Period ending</label><input type="date" id="ytdAsOf"></div>
-        <div class="field"><label for="ytdCpp">YTD CPP</label><input type="number" id="ytdCpp" class="num" step="0.01" inputmode="decimal"></div>
-        <div class="field"><label for="ytdEi">YTD EI</label><input type="number" id="ytdEi" class="num" step="0.01" inputmode="decimal"></div>
-      </div>
-    </div>
-    <button class="primary" id="saveSettings">Save settings</button>
-    <div class="panel">
+  <section class="tab" id="tab-settings" hidden>
+    <div class="ttl"><div><span class="eyebrow">App</span><h1>Settings</h1></div></div>
+    <div class="card" id="jobsPanel"></div>
+    <button class="btn" id="saveSettings">Save settings</button>
+    <div class="card"><h2>Quick picks</h2><p class="hint">Shifts you work often. Tap one in "Add a shift" to fill in the times. Add new ones from there.</p><div id="tplList" style="display:grid;gap:8px"></div></div>
+    <div class="card" id="backupCard" hidden>
       <h2>Backup</h2>
       <p class="hint">Everything is saved on this phone only. Make a backup every couple of weeks and save it to iCloud Drive. You'll need it if you get a new phone or delete the app.</p>
-      <button class="primary" id="backupBtn">Back up now</button>
-      <button class="secondary" id="restoreBtn">Restore from a backup file</button>
+      <button class="btn" id="backupBtn">Back up now</button>
+      <button class="btn ghost" id="restoreBtn">Restore from a backup file</button>
       <input type="file" id="restoreFile" accept=".json,application/json" hidden>
       <div id="restoreConfirm" hidden style="display:grid;gap:8px">
         <p class="err" id="restoreMsg"></p>
-        <div class="grid2"><button class="primary" id="restoreYes" style="background:var(--bad)">Replace my data</button><button class="secondary" id="restoreNo">Cancel</button></div>
+        <div class="grid2"><button class="btn danger" id="restoreYes">Replace my data</button><button class="btn ghost" id="restoreNo">Cancel</button></div>
       </div>
     </div>
-    <div class="panel">
+    <div class="card">
       <h2>Rates used (2026, BC)</h2>
-      <div class="tablewrap"><table class="num" id="ratesTable"></table></div>
+      <div class="tablewrap"><table id="ratesTable"></table></div>
       <p class="hint">Taxes are estimated with the CRA's per-period method, so they can differ from the stub by a few cents to a dollar. CPP2 (on earnings over $74,600) isn't included.</p>
     </div>
-    <p class="hint" style="text-align:center">Shift &amp; Stub Tracker <span class="num" id="appVersion"></span></p>
+    <p class="hint" style="text-align:center">Shift &amp; Stub Tracker <span id="appVersion"></span></p>
   </section>
-</div></main>
+</div>
 
-<nav class="tabs"><div class="wrap" role="tablist">
-  <button role="tab" id="t-hours" aria-selected="true">Hours</button>
-  <button role="tab" id="t-pay" aria-selected="false">Pay</button>
-  <button role="tab" id="t-calendar" aria-selected="false">Calendar</button>
-  <button role="tab" id="t-seniority" aria-selected="false">Seniority</button>
-  <button role="tab" id="t-settings" aria-selected="false">Settings</button>
+<button class="fab" id="fab" aria-label="Add a shift"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+
+<nav class="tabbar" aria-label="Sections"><div class="in" role="tablist">
+  <button role="tab" id="t-home" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="fill" d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+  <button role="tab" id="t-pay" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="fill" x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h3"/></svg>Pay</button>
+  <button role="tab" id="t-calendar" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="fill" x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendar</button>
+  <button role="tab" id="t-seniority" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle class="fill" cx="12" cy="9" r="5"/><path d="M9 13.5L8 21l4-2 4 2-1-7.5"/></svg>Seniority</button>
+  <button role="tab" id="t-settings" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle class="fill" cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>Settings</button>
 </div></nav>
+
 <div class="toast" id="toast" hidden></div>
-<div class="sheet-bg" id="sheetBg" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div></div>
+
+<div class="sheet-bg" id="addBg" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="addTitle">
+  <div class="grab"></div>
+  <div class="top"><button class="link" id="addCancel" style="font-size:16px">Cancel</button><h2 id="addTitle">Add a shift</h2><span style="width:52px"></span></div>
+  <div class="seg" role="group" aria-label="Job"><button id="jobAux" aria-pressed="true">Auxiliary</button><button id="jobUnion" class="u" aria-pressed="false">FSW · Union</button></div>
+  <div style="display:grid;gap:8px"><span class="label">Quick pick</span><div class="chips" id="chips"></div></div>
+  <div class="formcard">
+    <div class="line"><label for="fDate">Date</label><input type="date" id="fDate"></div>
+    <div class="times" id="fTimes">
+      <div class="t"><label for="fStart">Start</label><input type="time" id="fStart" value="09:00"></div>
+      <div class="t"><label for="fEnd">End</label><input type="time" id="fEnd" value="17:00"></div>
+    </div>
+    <div class="line" id="fBreakLine"><label for="fBreak" id="fBreakLbl">Meal break (min)</label><input type="number" id="fBreak" inputmode="numeric" min="0" step="5" value="30"></div>
+    <div class="line" id="fHoursLine" hidden><label for="fHours">Hours</label><input type="number" id="fHours" inputmode="decimal" min="0" step="0.25" placeholder="0"></div>
+    <div class="line" id="fTypeLine"><label for="fType">Pay type</label><select id="fType"><option value="regular">Regular</option><option value="ot15">Overtime 1.5×</option><option value="ot2">Overtime 2×</option><option value="stat">Stat holiday pay</option></select></div>
+    <div class="line"><label for="fHoursOnly">Only know the total hours</label><input type="checkbox" id="fHoursOnly" style="width:22px;height:22px;accent-color:var(--accent)"></div>
+  </div>
+  <div class="preview" id="fPreview"></div>
+  <p class="err" id="fErr" hidden></p>
+  <button class="btn" id="addShift">Add shift</button>
+</div></div>
+
+<div class="sheet-bg" id="dayBg" hidden><div class="sheet" id="daySheet" role="dialog" aria-modal="true" aria-labelledby="dayTitle"></div></div>
 
 <script>
 const E = (() => {
@@ -554,75 +635,92 @@ return { RATES, PAY_TYPES, calcPeriod, shiftHours, periodFor, shiftPeriod, recon
 </script>
 <script>
 (() => {
+const APP_VERSION = '2.2.0';
 const $ = id => document.getElementById(id);
 const money = n => (n < 0 ? '−$' : '$') + Math.abs(n).toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const money0 = n => '$' + Math.round(n).toLocaleString('en-CA');
 const hrs = n => (Math.round(n * 100) / 100).toString();
 const fmtDate = (s, opts = { month: 'short', day: 'numeric' }) => new Date(s + 'T12:00:00').toLocaleDateString('en-CA', opts);
 const todayIso = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmtRate = x => { const v = +x.toFixed(4), dp = (String(v).split('.')[1] || '').length; return v.toFixed(Math.max(2, dp)); };
+const t12 = t => { if (!t) return ''; let [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12; return `${h}${m ? ':' + String(m).padStart(2, '0') : ':00'} ${ap}`; };
+const days = (a, b) => Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 86400000);
+const svgChevL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>';
+const svgChevR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
 
-// Facility Service Worker - Auxiliary: Richmond Olympic Oval / CUPE 718-09 agreement 2024-2028, Schedule "A"
+// ---------- settings ----------
+// Facility Service Worker - Auxiliary: Richmond Olympic Oval / CUPE 718-09 agreement 2024-2028, Schedule "A" (hard-coded)
 const FSW_RATES = [{ from: '2024-07-01', rate: 22.59 }, { from: '2025-07-01', rate: 23.49 }, { from: '2026-07-01', rate: 24.31 }, { from: '2027-07-01', rate: 25.16 }];
-// Hard-coded from the agreement; not editable in the app
 const FSW_PREMIUM = { on: true, rate: 1.00, from: '19:00', to: '07:00' }; // Art. 7.06
 const FSW_DAILY_OT_HOURS = 8;                                              // Art. 9.01(a)
-const APP_VERSION = '2.1.0';
+const YTD_KEYS = [['gross', 'Gross earnings'], ['cpp', 'CPP'], ['ei', 'EI'], ['fedTax', 'Federal tax'], ['bcTax', 'BC tax'], ['dues', 'Union dues'], ['net', 'Net pay']];
 const DEFAULT_SETTINGS = {
   jobs: [
     { id: 'aux', name: 'Auxiliary', rate: null, inLieuPct: 12, union: false, duesPct: 0 },
-    { id: 'union', name: 'FSW · Union', union: true, duesPct: 1.9, duesBase: 'excl-inlieu', rules: 'roo-aux', paidBreaks: true, dailyHours: 8,
-      rates: FSW_RATES, premium: FSW_PREMIUM }
+    { id: 'union', name: 'FSW · Union', union: true, duesPct: 1.9, duesBase: 'excl-inlieu', rules: 'roo-aux', paidBreaks: true, dailyHours: FSW_DAILY_OT_HOURS, rates: FSW_RATES, premium: FSW_PREMIUM }
   ],
   duesConfirmed: false,
   seniority: { asOf: '2026-10-30', hours: 0, startSet: false, checks: [] },
-  ytd: { asOf: '', cpp: 0, ei: 0 }
+  ytdStart: { asOf: '', set: false },
+  ytdChecks: [],
+  templates: [
+    { id: 't1', job: 'union', start: '08:00', end: '16:00', breakMin: 30, type: 'regular' },
+    { id: 't2', job: 'union', start: '14:00', end: '22:00', breakMin: 30, type: 'regular' },
+    { id: 't3', job: 'aux', start: '09:00', end: '17:00', breakMin: 30, type: 'regular' }
+  ]
 };
-let settings = structuredClone(DEFAULT_SETTINGS);
-// fill in anything an older saved copy doesn't have; union job is auxiliary under the agreement
 function normalize(raw) {
-  const d = structuredClone(DEFAULT_SETTINGS), s = Object.assign(d, structuredClone(raw || {}));
+  const s = Object.assign(structuredClone(DEFAULT_SETTINGS), structuredClone(raw || {}));
   s.jobs = DEFAULT_SETTINGS.jobs.map(dj => {
     const sj = structuredClone((raw && raw.jobs || []).find(j => j.id === dj.id) || {});
     if (dj.id !== 'union') return Object.assign(structuredClone(dj), sj);
-    // union job follows the Oval agreement; drop settings left over from the placeholder agreement
     ['rate', 'inLieuPct', 'onSeniorityList', 'name'].forEach(k => delete sj[k]);
-    if (!sj.duesV202) { sj.duesPct = 1.9; sj.duesV202 = true; } // v2.0.2: 1.9% worked out from the Nov 2026 stub (was a 2% placeholder)
-    sj.duesBase = 'excl-inlieu';
-    // wage rates, shift differential and overtime always come from the agreement, whatever was saved before
-    return Object.assign(structuredClone(dj), sj, { rules: 'roo-aux', rates: structuredClone(FSW_RATES), premium: structuredClone(FSW_PREMIUM), dailyHours: FSW_DAILY_OT_HOURS });
+    if (!sj.duesV202) { sj.duesPct = 1.9; sj.duesV202 = true; }
+    return Object.assign(structuredClone(dj), sj, { duesBase: 'excl-inlieu', rules: 'roo-aux', rates: structuredClone(FSW_RATES), premium: structuredClone(FSW_PREMIUM), dailyHours: FSW_DAILY_OT_HOURS });
   });
   const sen = Object.assign(structuredClone(DEFAULT_SETTINGS.seniority), s.seniority || {});
   if (sen.byYear) { sen.hours = Object.values(sen.byYear).reduce((a, b) => a + (Number(b) || 0), 0); delete sen.byYear; }
-  s.seniority = sen; delete s.caConfirmed; delete s.inLieuConfirmed;
+  s.seniority = sen;
+  // v2.2.0: the old CPP/EI-only starting point (period end date) becomes the year-to-date starting point (pay date)
+  if (raw && raw.ytd && !(raw.ytdStart && raw.ytdStart.asOf) && raw.ytd.asOf) {
+    s.ytdStart = { asOf: E.periodFor(raw.ytd.asOf).payDate, cpp: Number(raw.ytd.cpp) || 0, ei: Number(raw.ytd.ei) || 0, set: false, migrated: true };
+  }
+  delete s.ytd; delete s.caConfirmed; delete s.inLieuConfirmed;
+  if (!Array.isArray(s.templates)) s.templates = structuredClone(DEFAULT_SETTINGS.templates);
+  if (!Array.isArray(s.ytdChecks)) s.ytdChecks = [];
   return s;
 }
-let periods = {}; // start -> {shifts:[], stub:{}}
+let settings = normalize(null);
+let periods = {}; // period start -> {shifts:[], stub:{}}
 let cur = E.periodFor(todayIso());
-let selJob = 'aux';
-let store = null; // {saveSettings, savePeriod}
+let store = { saveSettings: async () => {}, savePeriod: async () => {} };
+let HAS_BACKUP = false, firstRun = false;
+function setSync(t, kind) { const el = $('sync'); el.textContent = t; el.className = 'chip' + (kind ? ' ' + kind : ''); }
+function toast(t) { const el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2000); }
 
-// ---------- storage: on this phone only ----------
+// ---------- storage: on this phone only, with backup and restore ----------
+HAS_BACKUP = true;
 const LS = 'shiftstub.v1', META = 'shiftstub.meta';
-let firstRun = false;
 function lsLoad() { try { const d = JSON.parse(localStorage.getItem(LS) || 'null'); if (d) { settings = normalize(d.settings); periods = d.periods || {}; } else firstRun = true; } catch (e) { firstRun = true; } }
-function lsSave() { try { localStorage.setItem(LS, JSON.stringify({ settings, periods })); setSync(syncLabel()); } catch (e) { setSync('Not saved: phone storage is full or blocked'); } }
 function meta() { try { return JSON.parse(localStorage.getItem(META) || '{}'); } catch (e) { return {}; } }
 function setMeta(m) { try { localStorage.setItem(META, JSON.stringify(Object.assign(meta(), m))); } catch (e) {} }
-function syncLabel() { const b = meta().lastBackup; return b ? `Backed up ${fmtDate(b)}` : 'Not backed up yet'; }
+function syncLabel() { const b = meta().lastBackup; setSync(b ? `Backed up ${fmtDate(b)}` : 'Not backed up', b && days(b, todayIso()) <= 14 ? '' : 'warn'); }
+function lsSave() { try { localStorage.setItem(LS, JSON.stringify({ settings, periods })); syncLabel(); } catch (e) { setSync('Not saved', 'warn'); } }
 async function initStore() {
   lsLoad(); store = { saveSettings: async () => lsSave(), savePeriod: async () => lsSave() };
-  setSync(syncLabel()); $('welcome').hidden = !firstRun; render();
+  syncLabel(); $('welcome').hidden = !firstRun; render();
   const lastV = meta().appVersion; if (!firstRun && lastV && lastV !== APP_VERSION) setTimeout(() => toast('Updated to v' + APP_VERSION), 400); setMeta({ appVersion: APP_VERSION });
   try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (e) {}
 }
 function backupData() { return { app: 'shift-stub-tracker', version: 1, appVersion: APP_VERSION, exportedAt: new Date().toISOString(), settings, periods }; }
 async function doBackup() {
-  const name = `shift-stub-backup-${todayIso()}.json`, text = JSON.stringify(backupData(), null, 2);
-  const file = new File([text], name, { type: 'application/json' });
+  const name = `shift-stub-backup-${todayIso()}.json`, file = new File([JSON.stringify(backupData(), null, 2)], name, { type: 'application/json' });
   try {
-    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Shift & Stub backup' }); }
+    if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file], title: 'Shift & Stub backup' });
     else { const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
-    setMeta({ lastBackup: todayIso() }); setSync(syncLabel()); render(); toast('Backup made. Save it to Files or iCloud Drive.');
-  } catch (e) { if (e && e.name === 'AbortError') toast('Backup cancelled'); else toast('Backup didn’t work: ' + (e && e.message || e)); }
+    setMeta({ lastBackup: todayIso() }); syncLabel(); render(); toast('Backup made. Save it to iCloud Drive.');
+  } catch (e) { toast(e && e.name === 'AbortError' ? 'Backup cancelled' : 'Backup didn’t work'); }
 }
 let pendingRestore = null;
 function readBackupFile(file) {
@@ -631,8 +729,7 @@ function readBackupFile(file) {
     try {
       const d = JSON.parse(fr.result);
       if (d.app !== 'shift-stub-tracker' || !d.settings || typeof d.periods !== 'object') throw new Error('bad');
-      pendingRestore = d;
-      const n = Object.values(d.periods).reduce((a, p) => a + ((p.shifts || []).length), 0);
+      pendingRestore = d; const n = Object.values(d.periods).reduce((a, p) => a + ((p.shifts || []).length), 0);
       $('restoreMsg').textContent = `Backup from ${d.exportedAt ? fmtDate(d.exportedAt.slice(0, 10), { month: 'short', day: 'numeric', year: 'numeric' }) : 'unknown date'} with ${n} shift${n === 1 ? '' : 's'}. Restoring replaces everything on this phone.`;
       $('restoreConfirm').hidden = false; showTab('settings', 'restoreYes');
     } catch (e) { toast('That file isn’t a Shift & Stub backup'); }
@@ -642,349 +739,454 @@ function readBackupFile(file) {
 function applyRestore() {
   if (!pendingRestore) return;
   settings = normalize(pendingRestore.settings); periods = pendingRestore.periods || {}; pendingRestore = null;
-  lsSave(); setMeta({ lastBackup: todayIso() }); firstRun = false; $('welcome').hidden = true; $('restoreConfirm').hidden = true;
-  render(); toast('Backup restored');
+  lsSave(); setMeta({ lastBackup: todayIso() }); syncLabel(); firstRun = false; $('welcome').hidden = true; $('restoreConfirm').hidden = true; render(); toast('Backup restored');
 }
-function setSync(t) { $('sync').textContent = t; }
-function toast(t) { const el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 1800); }
-
-// ---------- calculations ----------
-const jobById = id => settings.jobs.find(j => j.id === id);
-const dayBefore = d => new Date(Date.parse(d + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10);
-// union hours already worked before a pay period starts (for the 12% -> 16% switch at 1,000 hours)
-const jobsForCalc = start => settings.jobs.map(j => j.rules === 'roo-aux'
-  ? { ...j, hoursBefore: start ? E.seniorityTally(settings.seniority, allShifts(), 'union', dayBefore(start), j.paidBreaks).total : 0 }
-  : { ...j, rate: Number(j.rate) || 0 });
-const pdata = start => periods[start] || { shifts: [], stub: {} };
-function ytdBefore(start) {
-  const y = { cpp: Number(settings.ytd.cpp) || 0, ei: Number(settings.ytd.ei) || 0 };
-  if (!settings.ytd.asOf || start <= settings.ytd.asOf) return { cpp: 0, ei: 0 }; // earlier periods: caps not near
-  Object.keys(periods).sort().forEach(s => {
-    if (s > settings.ytd.asOf && s < start) {
-      const p = periods[s], r = E.calcPeriod(jobsForCalc(s), p.shifts || [], undefined, { payDate: E.periodFor(s).payDate });
-      y.cpp += p.stub && p.stub.cpp !== undefined && p.stub.cpp !== '' ? Number(p.stub.cpp) : r.cpp;
-      y.ei += p.stub && p.stub.ei !== undefined && p.stub.ei !== '' ? Number(p.stub.ei) : r.ei;
-    }
-  });
-  return y;
-}
-const calcCur = () => E.calcPeriod(jobsForCalc(cur.start), pdata(cur.start).shifts || [], ytdBefore(cur.start), { payDate: cur.payDate });
-
-// ---------- render ----------
-function render() {
-  $('appVersion').textContent = 'v' + APP_VERSION;
-  $('plabel').textContent = `${fmtDate(cur.start)} – ${fmtDate(cur.end, { month: 'short', day: 'numeric', year: 'numeric' })}`;
-  $('psub').textContent = `Payday ${fmtDate(cur.payDate, { weekday: 'short', month: 'short', day: 'numeric' })}`;
-  if (!$('fDate').value || $('fDate').value < cur.start || $('fDate').value > cur.end) $('fDate').value = (todayIso() >= cur.start && todayIso() <= cur.end) ? todayIso() : cur.start;
-  renderReminders(); renderSummary(); renderShifts(); renderExpected(); renderStubForm(); renderCompare(); renderSettings(); renderSeniority(); renderCalendar(); updateCalcHint();
-}
-
-function renderReminders() {
-  const box = $('reminders'); box.innerHTML = '';
-  const u = jobById('union');
-  const items = [];
-  if (!settings.duesConfirmed) items.push(['dues', `<b>Check union dues:</b> set to <b>${u.duesPct}%</b> of union pay (not counting in lieu), worked out from your Nov 2026 stub. Confirm it on your next stub, then tick the box in Settings.`]);
-  if (!(Number(jobById('aux').rate) > 0)) items.push(['arate', `<b>Add your non-union auxiliary hourly rate</b> in Settings.`]);
-  if (!settings.seniority.startSet) items.push(['sen', `<b>Add your Facility Service Worker hours so far</b> so the running tab (and the 1,000-hour mark) starts at the right number.`]);
-  const lb = meta().lastBackup, hasData = Object.keys(periods).length > 0;
-  if (hasData && (!lb || (Date.parse(todayIso()) - Date.parse(lb)) / 86400000 > 14)) items.unshift(['backup', `<b>Back up your data.</b> It's only stored on this phone. ${lb ? 'Last backup ' + fmtDate(lb) + '.' : 'You haven\u2019t made a backup yet.'}`]);
-  items.forEach(([k, html]) => {
-    const d = document.createElement('div'); d.className = 'reminder';
-    d.innerHTML = `<div>${html}</div><button data-k="${k}">Update</button>`;
-    d.querySelector('button').onclick = () => k === 'backup' ? showTab('settings', 'backupBtn') : k === 'sen' ? showTab('seniority', 'senAsOf') : showTab('settings', k === 'dues' ? 'uDues' : 'aRate');
-    box.appendChild(d);
-  });
-}
-
-function renderSummary() {
-  const r = calcCur();
-  const by = id => r.lines.filter(l => l.job === id && l.kind === 'earning');
-  const rows = settings.jobs.map(j => {
-    const h = by(j.id).reduce((a, l) => a + (l.noHours ? 0 : (l.hours || 0)), 0), g = by(j.id).reduce((a, l) => a + l.amount, 0);
-    return `<div class="jobrow"><span class="tag ${j.union ? 'union' : ''}">${esc(j.name)}</span><span class="num">${hrs(h)} hrs</span><span class="num">${money(g)}</span></div>`;
-  }).join('');
-  $('summary').innerHTML = `<h3>This pay period</h3>
-    <div class="totals"><div><small>Hours</small><span class="num">${hrs(r.hours)}</span></div>
-    <div><small>Gross</small><span class="num">${money(r.gross)}</span></div>
-    <div class="net"><small>Est. net</small><span class="num">${money(r.net)}</span></div></div>
-    <div class="jobsplit">${rows}</div>`;
-}
-
-function renderShifts() {
-  const list = (pdata(cur.start).shifts || []).slice().sort((a, b) => (a.date + (a.start || '')).localeCompare(b.date + (b.start || '')));
-  const el = $('shiftList');
-  if (!list.length) { el.innerHTML = `<p class="empty">No shifts logged for this period yet. Add your first one above.</p>`; return; }
-  el.innerHTML = '';
-  list.forEach(s => {
-    const j = jobById(s.job) || { name: s.job };
-    const row = document.createElement('div'); row.className = 'shift';
-    const times = s.start ? `${s.start}–${s.end}${s.breakMin ? ` · ${s.breakMin} min ${j.paidBreaks ? 'paid' : 'unpaid'} break` : ''}` : 'Hours only';
-    row.innerHTML = `<div class="when"><strong>${fmtDate(s.date, { weekday: 'short', month: 'short', day: 'numeric' })} <span class="tag ${j.union ? 'union' : ''}">${esc(j.name)}</span></strong>
-      <span>${times} · ${s.job === 'union' ? (E.statName(s.date) ? 'Stat holiday' : 'Agreement rules') : E.PAY_TYPES[s.type || 'regular'].label}${s.note ? ' · ' + esc(s.note) : ''}</span></div>
-      <span class="num hrs">${hrs(paidH(s))} h</span><button class="del" aria-label="Delete shift">✕</button>`;
-    const b = row.querySelector('.del');
-    b.onclick = () => {
-      if (!b.classList.contains('armed')) { b.classList.add('armed'); b.textContent = 'Delete'; setTimeout(() => { b.classList.remove('armed'); b.textContent = '✕'; }, 3000); return; }
-      const p = pdata(cur.start); p.shifts = p.shifts.filter(x => x.id !== s.id); periods[cur.start] = p; store.savePeriod(cur.start); render(); toast('Shift deleted');
-    };
-    el.appendChild(row);
-  });
-}
-
-function renderExpected() {
-  const r = calcCur();
-  let html = `<table><thead><tr><th>Item</th><th class="r">Hours</th><th class="r">Rate / base</th><th class="r">Amount</th></tr></thead><tbody>`;
-  settings.jobs.forEach(j => {
-    const ls = r.lines.filter(l => l.job === j.id);
-    if (!ls.length) return;
-    html += `<tr class="sub"><td colspan="4" style="padding-top:10px"><span class="tag ${j.union ? 'union' : ''}">${esc(j.name)}</span></td></tr>`;
-    ls.forEach(l => html += `<tr><td>${esc(l.label)}</td><td class="r num">${l.hours ? hrs(l.hours) : ''}</td><td class="r num">${l.rate ? fmtRate(l.rate) : l.base ? l.base.toFixed(2) : ''}</td><td class="r num">${l.kind === 'deduction' ? '−' : ''}${l.amount.toFixed(2)}</td></tr>`);
-  });
-  html += `<tr class="total"><td>Gross earnings</td><td class="r num">${hrs(r.hours)}</td><td></td><td class="r num">${r.gross.toFixed(2)}</td></tr>
-    <tr><td>CPP</td><td></td><td></td><td class="r num">−${r.cpp.toFixed(2)}</td></tr>
-    <tr><td>EI</td><td></td><td></td><td class="r num">−${r.ei.toFixed(2)}</td></tr>
-    <tr><td>Federal income tax</td><td></td><td></td><td class="r num">${r.fedTax ? "−" : ""}${r.fedTax.toFixed(2)}</td></tr>
-    <tr><td>BC income tax</td><td></td><td></td><td class="r num">${r.bcTax ? "−" : ""}${r.bcTax.toFixed(2)}</td></tr>
-    ${r.dues ? `<tr><td>Union dues (total)</td><td></td><td></td><td class="r num">−${r.dues.toFixed(2)}</td></tr>` : ''}
-    <tr class="total"><td>Net pay</td><td></td><td></td><td class="r num">${r.net.toFixed(2)}</td></tr></tbody></table>`;
-  $('expected').innerHTML = html;
-}
-
-const STUB_FIELDS = [['hours', 'Hours paid'], ['gross', 'Current earnings'], ['cpp', 'CPP'], ['ei', 'EI'], ['fedTax', 'Federal Inc Tax'], ['bcTax', 'BC Income Tax'], ['dues', 'Union dues'], ['net', 'Cheque amount (net)']];
-function renderStubForm() {
-  const stub = pdata(cur.start).stub || {};
-  const f = $('stubForm');
-  if (f.dataset.period === cur.start && f.contains(document.activeElement)) return; // don't wipe while typing
-  f.dataset.period = cur.start;
-  f.innerHTML = STUB_FIELDS.map(([k, label]) => `<div class="field"><label for="stub-${k}">${label}</label><input id="stub-${k}" class="num" type="number" step="0.01" inputmode="decimal" value="${stub[k] ?? ''}"></div>`).join('');
-}
-
-function renderCompare() {
-  const stub = pdata(cur.start).stub || {}, el = $('compare');
-  const rows = E.reconcile(calcCur(), stub);
-  if (!rows.length) { el.hidden = true; return; }
-  el.hidden = false;
-  const worst = rows.some(r => r.status === 'off') ? 'off' : rows.some(r => r.status === 'close') ? 'close' : 'match';
-  const msg = { match: 'Your stub matches what you logged.', close: 'Close enough: small differences are usually tax rounding.', off: 'Something doesn’t match. Check the red rows below.' }[worst];
-  const word = { match: 'Match', close: 'Close', off: 'Off' };
-  el.innerHTML = `<h2>Stub vs. expected</h2><div class="verdict ${worst}">${msg}</div>
-    <div class="tablewrap"><table><thead><tr><th>Item</th><th class="r">Expected</th><th class="r">Stub</th><th class="r">Diff</th><th></th></tr></thead><tbody>
-    ${rows.map(r => `<tr><td>${r.label}</td><td class="r num">${r.key === 'hours' ? hrs(r.expected) : r.expected.toFixed(2)}</td><td class="r num">${r.key === 'hours' ? hrs(r.actual) : r.actual.toFixed(2)}</td><td class="r num">${r.diff > 0 ? '+' : ''}${r.diff.toFixed(2)}</td><td><span class="pill ${r.status}">${word[r.status]}</span></td></tr>`).join('')}
-    </tbody></table></div>`;
-}
-
-function renderSettings() {
-  const p = $('jobsPanel');
-  if (p.contains(document.activeElement)) return;
-  const a = jobById('aux'), u = jobById('union');
-  p.innerHTML = `<h2>Departments</h2>
-    <h3><span class="tag">Auxiliary</span> non-union</h3>
-    <div class="grid2">
-      <div class="field"><label for="aRate">Hourly rate ($)</label><input id="aRate" class="num" type="number" step="0.01" inputmode="decimal" value="${a.rate ?? ''}"></div>
-      <div class="field"><label for="aInLieu">In lieu of benefits (%)</label><input id="aInLieu" class="num" type="number" step="0.5" inputmode="decimal" value="${a.inLieuPct}"></div>
-    </div>
-    <h3 style="margin-top:6px"><span class="tag union">${esc(u.name)}</span> Facility Service Worker – Auxiliary</h3>
-    <p class="hint">Richmond Olympic Oval / CUPE 718-09 agreement, July 1, 2024 – June 30, 2028.</p>
-    <div class="tablewrap"><table><thead><tr><th>From</th><th class="r">Hourly rate</th><th></th></tr></thead><tbody>
-      ${u.rates.map((r, i) => { const nextFrom = u.rates[i + 1] && u.rates[i + 1].from, now = todayIso() >= r.from && (!nextFrom || todayIso() < nextFrom);
-        return `<tr><td>${fmtDate(r.from, { month: 'short', day: 'numeric', year: 'numeric' })}</td><td class="r num">$${Number(r.rate).toFixed(2)}</td><td>${now ? '<span class="pill match">Now</span>' : ''}</td></tr>`; }).join('')}
-    </tbody></table></div>
-    <div class="tablewrap"><table><tbody>
-      <tr><td>Shift differential</td><td class="r num">$1.00/h, 7 pm–7 am</td></tr>
-      <tr><td>Overtime 1.5×</td><td class="r num">past 8 h/day or 40 h/week</td></tr>
-      <tr><td>Overtime 2×</td><td class="r num">past 12 h/day or 48 h/week</td></tr>
-      <tr><td>Stat holiday worked</td><td class="r num">overtime rates, all hours</td></tr>
-    </tbody></table></div>
-    <p class="hint">Rates, shift differential and overtime are set from the agreement and can't be changed here.</p>
-    <div class="grid2">
-      <div class="field"><label for="uDues">Union dues (% of union pay, not counting in lieu)</label><input id="uDues" class="num" type="number" step="0.01" inputmode="decimal" value="${u.duesPct}"></div>
-    </div>
-    <label class="toggle"><input type="checkbox" id="uPaidBrk" ${u.paidBreaks ? 'checked' : ''}> Meal breaks are paid (Letter of Understanding #1)</label>
-    <label class="toggle"><input type="checkbox" id="duesOk" ${settings.duesConfirmed ? 'checked' : ''}> The union dues % is the exact figure</label>
-    <details><summary class="hint">How union pay is worked out</summary><ul class="hint" style="padding-left:18px;margin:8px 0 0;display:grid;gap:4px">
-      <li>Rate changes automatically each July 1 (Schedule "A").</li>
-      <li>Overtime 1.5× past 8 h a day or 40 h a week; 2× past 12 h a day or 48 h a week (Art. 9.01). Weeks run Saturday to Friday.</li>
-      <li>Stat holidays worked are paid at overtime rates for every hour, including Boxing Day (Art. 11.01, 11.06).</li>
-      <li>In lieu of benefits: 12% of earnings excluding overtime, 16% after your first 1,000 hours (Art. 7.05). Switches automatically.</li>
-      <li>Paid meal break: LOU #1 pays Operations employees for meal breaks while they stay on call. Untick if your stub shows otherwise. The 15-minute rest breaks are always paid (Art. 8.09), so don't enter them.</li>
-    </ul></details>
-    <p class="hint">Dues are taken from union-job earnings only and lower your taxable income.</p>`;
-  if (!$('ytdAsOf').matches(':focus')) { $('ytdAsOf').value = settings.ytd.asOf; $('ytdCpp').value = settings.ytd.cpp; $('ytdEi').value = settings.ytd.ei; }
-  const R = E.RATES;
-  $('ratesTable').innerHTML = `<tbody>
-    <tr><td>CPP</td><td class="r">5.95% over $134.62/period · max $4,230.45</td></tr>
-    <tr><td>EI</td><td class="r">1.63% · max $1,123.07</td></tr>
-    <tr><td>Federal</td><td class="r">14% to $58,523 · BPA $${R.fed.bpa.toLocaleString()}</td></tr>
-    <tr><td>BC</td><td class="r">5.60% to $50,363 · BPA $${R.bc.bpa.toLocaleString()}</td></tr>
-    <tr><td>BC Jul–Dec 2026 payroll</td><td class="r">6.14% · reduction up to $805</td></tr>
-    <tr><td>BC reduction</td><td class="r">up to $690 (annual)</td></tr></tbody>`;
-}
-const paidH = s => E.shiftHours(E.effShift(jobById(s.job), s));
-function allShifts() { return Object.values(periods).flatMap(p => p.shifts || []); }
-function renderSeniority() {
-  const sen = settings.seniority, u = jobById('union'), t = E.seniorityTally(sen, allShifts(), 'union', null, u.paidBreaks);
-  const pct = Math.min(100, t.total / 10);
-  const daysSince = t.lastWorked ? Math.floor((Date.parse(todayIso()) - Date.parse(t.lastWorked)) / 86400000) : null;
-  const m = new Date(todayIso() + 'T12:00:00').getMonth(), nextList = m < 6 ? 'July' : 'January';
-  $('senSummary').innerHTML = `<h3><span class="tag union">${esc(u.name)}</span> hours worked</h3>
-    <div class="totals"><div><small>Total</small><span class="num">${hrs(t.total)}</span></div>
-      <div><small>Seniority hrs</small><span class="num">${hrs(t.seniorityHours)}</span></div>
-      <div><small>In lieu</small><span class="num">${t.reached1000 ? '16%' : '12%'}</span></div></div>
-    ${t.reached1000 ? `<p class="hint"><b>Past 1,000 hours.</b> You're accruing seniority (Art. 5.01c) and in lieu is 16% (Art. 7.05b). Seniority hours are the hours after your first 1,000.</p>` : `
-    <div style="display:grid;gap:6px"><div class="jobrow"><span>Toward 1,000 h</span><span></span><span class="num">${hrs(t.total)} / 1,000 h</span></div>
-      <div class="bar" role="img" aria-label="${Math.round(pct)}% of 1,000 hours"><i style="width:${pct}%"></i></div>
-      <p class="hint">${hrs(1000 - t.total)} more hours until you start accruing seniority and in lieu goes from 12% to 16%. Probation also ends at 1,000 hours or 18 months (Art. 6.01).</p></div>`}
-    <p class="hint">Seniority lists are posted in January and July (Art. 5.02). Next: ${nextList}.</p>
-    ${daysSince !== null ? `<p class="hint">Last union shift: ${fmtDate(t.lastWorked, { month: 'short', day: 'numeric', year: 'numeric' })}${daysSince > 120 ? ` · <b style="color:var(--bad)">${daysSince} days ago. Seniority is lost after 183 days inactive (Art. 5.03c).</b>` : ''}</p>` : ''}`;
-  // running tab
-  const starts = Object.keys(periods).filter(st => (periods[st].shifts || []).some(s => s.job === 'union' && s.date > sen.asOf)).sort();
-  let run = Number(sen.hours) || 0;
-  let rows = `<tr><td>Starting hours (to ${fmtDate(sen.asOf)})</td><td class="r num"></td><td class="r num">${hrs(run)}</td></tr>`;
-  starts.forEach(st => { const h = (periods[st].shifts || []).filter(s => s.job === 'union' && s.date > sen.asOf).reduce((a, s) => a + paidH(s), 0); const before = run; run += h;
-    const p = E.periodFor(st); rows += `<tr><td>${fmtDate(p.start)} – ${fmtDate(p.end)}${before < 1000 && run >= 1000 ? ' <span class="pill match">1,000 h</span>' : ''}</td><td class="r num">+${hrs(h)}</td><td class="r num">${hrs(run)}</td></tr>`; });
-  $('senTab').innerHTML = `<table><thead><tr><th>Pay period</th><th class="r">Union hrs</th><th class="r">Running total</th></tr></thead><tbody>${rows}</tbody></table>`;
-  // list checks
-  const checks = (sen.checks || []).slice().sort((a, b) => b.date.localeCompare(a.date));
-  $('checks').innerHTML = checks.length ? `<table><thead><tr><th>List date</th><th class="r">List</th><th class="r">Mine</th><th class="r">Diff</th><th></th></tr></thead><tbody>${checks.map(c => {
-    const mine = E.seniorityTally(sen, allShifts(), 'union', c.date, jobById('union').paidBreaks).total, diff = E.r2(c.hours - mine), st = Math.abs(diff) < 0.01 ? 'match' : Math.abs(diff) <= 1 ? 'close' : 'off';
-    return `<tr><td>${fmtDate(c.date, { month: 'short', day: 'numeric', year: 'numeric' })}</td><td class="r num">${hrs(c.hours)}</td><td class="r num">${hrs(mine)}</td><td class="r num">${diff > 0 ? '+' : ''}${diff.toFixed(2)}</td><td><span class="pill ${st}">${{ match: 'Match', close: 'Close', off: 'Off' }[st]}</span></td></tr>`; }).join('')}</tbody></table>
-    ${c0(checks)}` : '';
-  if (!['senAsOf', 'senHours'].includes(document.activeElement && document.activeElement.id)) { $('senAsOf').value = sen.asOf; $('senHours').value = sen.hours ?? 0; }
-  if (!$('chkDate').value) $('chkDate').value = todayIso();
-}
-const c0 = checks => checks.some(c => Math.abs(c.hours - E.seniorityTally(settings.seniority, allShifts(), 'union', c.date, jobById('union').paidBreaks).total) > 1) ? '<p class="hint">If the list differs from your log, bring your shift log to your shop steward. Lists show total hours worked as a Facility Service Worker; seniority hours are those past 1,000.</p>' : '';
-const fmtRate = x => { const v = +x.toFixed(4), dp = (String(v).split('.')[1] || '').length; return v.toFixed(Math.max(2, dp)); };
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-
-// ---------- actions ----------
-function updateCalcHint() {
-  const j0 = jobById(selJob), h = E.shiftHours({ start: $('fStart').value, end: $('fEnd').value, breakMin: j0.paidBreaks ? 0 : $('fBreak').value });
-  $('fBreakLbl').textContent = j0.paidBreaks ? 'Meal break (paid)' : 'Meal break (unpaid)';
-  const j = jobById(selJob), mult = selJob === 'union' ? 1 : E.PAY_TYPES[$('fType').value].mult;
-  const stat = $('fDate').value && E.statName($('fDate').value);
-  const base = j.rules === 'roo-aux' ? E.rateOn(j, $('fDate').value || todayIso()) : (Number(j.rate) || 0), rate = base * mult;
-  $('fCalc').innerHTML = `<span class="num">${hrs(h)} h</span> × <span class="num">${money(rate)}</span> = <span class="num">${money(h * rate)}</span>${!(base > 0) ? ' · add the hourly rate in Settings' : ''}${selJob === 'union' ? ' at straight time, before overtime, premium and in lieu' : ''}${stat ? ` · <b>${stat}</b>${selJob === 'union' ? ': paid at overtime rates' : ' (stat holiday)'}` : ''}`;
-}
-['fStart', 'fEnd', 'fBreak', 'fType', 'fDate'].forEach(id => $(id).addEventListener('input', updateCalcHint));
-function setJob(j) { selJob = j; $('fTypeWrap').hidden = j === 'union'; $('fTypeAuto').hidden = j !== 'union'; $('jobAux').setAttribute('aria-pressed', j === 'aux'); $('jobUnion').setAttribute('aria-pressed', j === 'union'); updateCalcHint(); }
-$('jobAux').onclick = () => setJob('aux'); $('jobUnion').onclick = () => setJob('union');
-
-function addShift(s) {
-  const err = $('fErr'); err.hidden = true;
-  if (!s.date) { err.textContent = 'Pick a date for the shift.'; err.hidden = false; return; }
-  if (!(E.shiftHours(s) > 0)) { err.textContent = 'This shift has 0 hours. Check the start, end and break.'; err.hidden = false; return; }
-  const per = E.periodFor(s.date);
-  const p = periods[per.start] || { shifts: [], stub: {} };
-  p.shifts = (p.shifts || []).concat([{ id: Math.random().toString(36).slice(2, 10), ...s }]);
-  periods[per.start] = p; store.savePeriod(per.start);
-  if (per.start !== cur.start) cur = per;
-  render(); toast(`Added ${hrs(paidH(s))} h · ${jobById(s.job).name}`);
-}
-const typeFor = () => selJob === 'union' ? 'regular' : $('fType').value;
-$('addShift').onclick = () => addShift({ date: $('fDate').value, job: selJob, type: typeFor(), start: $('fStart').value, end: $('fEnd').value, breakMin: Number($('fBreak').value) || 0 });
-$('addHours').onclick = () => { addShift({ date: $('fDate').value, job: selJob, type: typeFor(), hours: Number($('fHours').value) || 0 }); $('fHours').value = ''; };
-
-$('saveStub').onclick = () => {
-  const stub = {}; STUB_FIELDS.forEach(([k]) => { const v = $('stub-' + k).value; if (v !== '') stub[k] = Number(v); });
-  const p = pdata(cur.start); p.stub = stub; periods[cur.start] = p; store.savePeriod(cur.start);
-  document.activeElement && document.activeElement.blur(); render(); $('compare').scrollIntoView({ behavior: 'smooth', block: 'start' });
-};
-
-$('saveSettings').onclick = () => {
-  const a = jobById('aux'), u = jobById('union'), n = id => $(id).value === '' ? null : Number($(id).value);
-  a.rate = n('aRate'); a.inLieuPct = n('aInLieu') || 0;
-  u.duesPct = n('uDues') || 0;
-  u.paidBreaks = $('uPaidBrk').checked;
-  settings.duesConfirmed = $('duesOk').checked;
-  settings.ytd = { asOf: $('ytdAsOf').value || '', cpp: Number($('ytdCpp').value) || 0, ei: Number($('ytdEi').value) || 0 };
-  document.activeElement && document.activeElement.blur();
-  store.saveSettings(); render(); toast('Settings saved');
-};
-
-$('saveSen').onclick = () => {
-  settings.seniority.asOf = $('senAsOf').value || settings.seniority.asOf;
-  settings.seniority.hours = Number($('senHours').value) || 0;
-  settings.seniority.startSet = true; document.activeElement && document.activeElement.blur();
-  store.saveSettings(); render(); toast('Starting hours saved');
-};
-$('addCheck').onclick = () => {
-  const d = $('chkDate').value, h = Number($('chkHours').value);
-  if (!d || !($('chkHours').value !== '' && h >= 0)) { toast('Enter the list date and your hours on it'); return; }
-  settings.seniority.checks = (settings.seniority.checks || []).filter(c => c.date !== d).concat([{ date: d, hours: h }]);
-  $('chkHours').value = ''; store.saveSettings(); render(); toast('List compared');
-};
 $('backupBtn').onclick = doBackup;
 $('restoreBtn').onclick = $('welcomeRestore').onclick = () => { $('restoreFile').value = ''; $('restoreFile').click(); };
 $('restoreFile').onchange = e => { const f = e.target.files && e.target.files[0]; if (f) readBackupFile(f); };
 $('restoreYes').onclick = applyRestore;
 $('restoreNo').onclick = () => { pendingRestore = null; $('restoreConfirm').hidden = true; };
-$('welcomeFresh').onclick = () => { firstRun = false; $('welcome').hidden = true; lsSave(); showTab('settings', 'aRate'); };
-$('prev').onclick = () => { cur = E.shiftPeriod(cur, -1); render(); };
-$('next').onclick = () => { cur = E.shiftPeriod(cur, 1); render(); };
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 
-// ---------- calendar ----------
-let calMonth = todayIso().slice(0, 7);
+
+// ---------- calculations ----------
+const jobById = id => settings.jobs.find(j => j.id === id);
+const pdata = start => periods[start] || { shifts: [], stub: {} };
+const allShifts = () => Object.values(periods).flatMap(p => p.shifts || []);
+const paidH = s => E.shiftHours(E.effShift(jobById(s.job), s));
+const dayBefore = d => new Date(Date.parse(d + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10);
+const jobsForCalc = start => settings.jobs.map(j => j.rules === 'roo-aux'
+  ? { ...j, hoursBefore: start ? E.seniorityTally(settings.seniority, allShifts(), 'union', dayBefore(start), j.paidBreaks).total : 0 }
+  : { ...j, rate: Number(j.rate) || 0 });
+const stubVal = (p, k) => p && p.stub && p.stub[k] !== undefined && p.stub[k] !== '' && p.stub[k] !== null ? Number(p.stub[k]) : null;
+function ytdBefore(start) { // CPP and EI already paid this year before this period (for the yearly maximums)
+  const S = settings.ytdStart, pay = E.periodFor(start).payDate, y = { cpp: 0, ei: 0 };
+  if (!S.asOf || S.asOf.slice(0, 4) !== pay.slice(0, 4) || pay <= S.asOf) return y;
+  y.cpp = Number(S.cpp) || 0; y.ei = Number(S.ei) || 0;
+  Object.keys(periods).sort().forEach(st => {
+    const pd = E.periodFor(st).payDate;
+    if (pd > S.asOf && pd < pay) { const p = periods[st], r = calcFor(st, false); y.cpp += stubVal(p, 'cpp') ?? r.cpp; y.ei += stubVal(p, 'ei') ?? r.ei; }
+  });
+  return y;
+}
+function calcFor(start, withYtd = true, shiftsOverride) {
+  return E.calcPeriod(jobsForCalc(start), shiftsOverride || pdata(start).shifts || [], withYtd ? ytdBefore(start) : { cpp: 0, ei: 0 }, { payDate: E.periodFor(start).payDate });
+}
+const calcCur = () => calcFor(cur.start);
+const jobGross = (r, id) => r.lines.filter(l => l.job === id && l.kind === 'earning').reduce((a, l) => a + l.amount, 0);
+function shiftEarnings(s) { // what one shift adds to its period's gross pay
+  const st = E.periodFor(s.date).start, list = pdata(st).shifts || [];
+  return E.r2(calcFor(st, false).gross - calcFor(st, false, list.filter(x => x !== s)).gross);
+}
+
+// ---------- render ----------
+function render() {
+  $('appVersion').textContent = 'v' + APP_VERSION;
+  $('homeDate').textContent = new Date(todayIso() + 'T12:00:00').toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' });
+  renderReminders(); renderHero(); renderTiles(); renderShifts(); renderPay(); renderYear(); renderCalendar(); renderSeniority(); renderSettings();
+}
+
+function renderReminders() {
+  const box = $('reminders'); box.innerHTML = '';
+  const u = jobById('union'), items = [];
+  if (HAS_BACKUP) { const lb = meta().lastBackup; if (Object.keys(periods).length && (!lb || days(lb, todayIso()) > 14)) items.push(['backup', `<b>Back up your data.</b> It's only stored on this phone. ${lb ? 'Last backup ' + fmtDate(lb) + '.' : 'You haven’t made a backup yet.'}`]); }
+  if (!(Number(jobById('aux').rate) > 0)) items.push(['arate', `<b>Add your auxiliary hourly rate</b> in Settings.`]);
+  if (!settings.duesConfirmed) items.push(['dues', `<b>Check union dues:</b> set to <b>${u.duesPct}%</b> of union pay (not counting in lieu). Confirm it on your next stub, then tick the box in Settings.`]);
+  if (!settings.seniority.startSet) items.push(['sen', `<b>Add your Facility Service Worker hours so far</b> so the 1,000-hour count starts at the right number.`]);
+  if (!settings.ytdStart.set) items.push(['ytd', `<b>Add your year-to-date starting point</b> from a pay stub so the Year screen adds up.`]);
+  items.forEach(([k, html]) => {
+    const d = document.createElement('div'); d.className = 'reminder';
+    d.innerHTML = `<div>${html}</div><button>Update</button>`;
+    d.querySelector('button').onclick = () => ({ backup: () => showTab('settings', 'backupBtn'), arate: () => showTab('settings', 'aRate'), dues: () => showTab('settings', 'uDues'), sen: () => showTab('seniority', 'senAsOf'), ytd: () => { showTab('pay'); setPayView('year'); focusLater('ysAsOf'); } })[k]();
+    box.appendChild(d);
+  });
+}
+
+function renderHero() {
+  const r = calcCur(), p = pdata(cur.start), stubNet = stubVal(p, 'net'), today = todayIso();
+  const a = jobGross(r, 'aux'), u = jobGross(r, 'union');
+  const rec = E.reconcile(r, p.stub || {}), worst = rec.length ? (rec.some(x => x.status === 'off') ? 'off' : rec.some(x => x.status === 'close') ? 'warn' : 'ok') : null;
+  const dleft = days(today, cur.payDate);
+  const kicker = dleft >= 0 ? `Next payday · ${fmtDate(cur.payDate, { weekday: 'short', month: 'short', day: 'numeric' })}` : `Paid · ${fmtDate(cur.payDate, { weekday: 'short', month: 'short', day: 'numeric' })}`;
+  const badge = worst ? `<span class="badge ${worst}">${{ ok: '✓ Stub matches', warn: 'Stub close', off: '⚠ Check stub' }[worst]}</span>` : dleft > 0 ? `<span class="badge">in ${dleft} day${dleft === 1 ? '' : 's'}</span>` : dleft === 0 ? '<span class="badge">today</span>' : '';
+  const amt = stubNet ?? r.net;
+  $('hero').innerHTML = `<div class="row"><span class="kicker">${kicker}</span>${badge}</div>
+    <div class="row" style="align-items:flex-end"><div style="display:grid;gap:4px;min-width:0"><span class="big">${money(amt)}</span>
+      <span class="cap">${stubNet !== null ? 'Take-home from your stub' : 'Estimated take-home'} · ${fmtDate(cur.start)} – ${fmtDate(cur.end)}</span></div>
+      <div class="nav"><button id="hPrev" aria-label="Previous pay period">${svgChevL}</button><button id="hNext" aria-label="Next pay period">${svgChevR}</button></div></div>
+    ${a + u > 0 ? `<div class="split" role="img" aria-label="Auxiliary ${money(a)}, FSW union ${money(u)}">${a ? `<i style="flex:${a};background:var(--hero-accent)"></i>` : ''}${u ? `<i style="flex:${u};background:var(--hero-union)"></i>` : ''}</div>
+    <div class="legend2"><span><i class="dot" style="background:var(--hero-accent)"></i>Auxiliary ${money(a)}</span><span><i class="dot" style="background:var(--hero-union)"></i>FSW · Union ${money(u)}</span></div>` : `<span class="cap">No shifts logged for this period yet. Tap + to add one.</span>`}
+    <div class="foot"><span>Gross <b>${money(r.gross)}</b></span><span>Deductions <b>${money(r.totalDeductions)}</b></span><button id="hDetails">Details</button></div>`;
+  $('hPrev').onclick = () => { cur = E.shiftPeriod(cur, -1); render(); };
+  $('hNext').onclick = () => { cur = E.shiftPeriod(cur, 1); render(); };
+  $('hDetails').onclick = () => { showTab('pay'); setPayView('cheque'); };
+}
+
+function ringSvg(pct, label, size = 64, stroke = 7) {
+  const r = (size - stroke) / 2, c = 2 * Math.PI * r, d = Math.max(0, Math.min(1, pct)) * c, done = pct >= 1;
+  return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${esc(label)}">
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--union-soft)" stroke-width="${stroke}"/>
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${done ? 'var(--good)' : 'var(--union-strong)'}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${d.toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>
+    <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-size="${size > 100 ? 26 : 13}" fill="var(--fg)">${done ? '✓' : Math.floor(pct * 100) + '%'}</text></svg>`;
+}
+function nextStat() { const t = todayIso(); for (let i = 0; i < 400; i++) { const d = new Date(Date.parse(t + 'T00:00:00Z') + i * 86400000).toISOString().slice(0, 10), n = E.statName(d); if (n) return [d, n]; } return null; }
+function renderTiles() {
+  const t = E.seniorityTally(settings.seniority, allShifts(), 'union', null, jobById('union').paidBreaks);
+  let a = 0, u = 0; (pdata(cur.start).shifts || []).forEach(s => s.job === 'union' ? u += paidH(s) : a += paidH(s));
+  const ns = nextStat();
+  $('tiles').innerHTML = `<button class="tile center" id="tileSen" style="border:0;color:inherit">${ringSvg(t.total / 1000, `${hrs(t.total)} of 1,000 union hours`)}<span class="s" style="font-weight:600">${t.reached1000 ? `${hrs(t.seniorityHours)} h seniority` : `${Math.round(t.total).toLocaleString('en-CA')} / 1,000 h`}<br>union</span></button>
+    <div class="tile"><span class="k">This period</span><span class="v">${hrs(a + u)}<small> h</small></span><span class="s"><b style="color:var(--accent)">${hrs(a)}</b> aux · <b style="color:var(--union)">${hrs(u)}</b> FSW</span></div>
+    <div class="tile"><span class="k">Next stat</span><span class="v" style="font-size:22px;color:var(--bad)">${ns ? fmtDate(ns[0]) : '–'}</span><span class="s">${ns ? esc(ns[1]) + ' · FSW at 1.5×' : ''}</span></div>`;
+  $('tileSen').onclick = () => showTab('seniority');
+}
+
+function shiftRow(s, withDelete) {
+  const j = jobById(s.job) || { name: s.job }, isU = s.job === 'union', st = E.statName(s.date);
+  const wd = fmtDate(s.date, { weekday: 'short' }).replace('.', '').toUpperCase().slice(0, 3);
+  let detail = s.start ? `${t12(s.start)}–${t12(s.end)}` : 'Hours only';
+  if (s.start && s.breakMin) detail += ` · ${s.breakMin} min ${j.paidBreaks ? 'paid' : 'unpaid'} break`;
+  if (isU && s.start) { const pm = E.rooAuxEarnings({ ...jobById('union'), hoursBefore: 0 }, [E.effShift(jobById('union'), s)]).premHours; if (pm > 0) detail += ` · ${hrs(pm)} h night premium`; }
+  if (st) detail += ` · ${st}`;
+  if (!isU && s.type && s.type !== 'regular') detail += ` · ${E.PAY_TYPES[s.type].label}`;
+  if (s.note) detail += ` · ${s.note}`;
+  return `<div class="item" data-id="${esc(s.id || '')}">${withDelete ? '<button class="del" tabindex="-1">Delete</button>' : ''}<div class="row">
+    <div class="datebox${isU ? ' u' : ''}"><span>${wd}</span><b>${Number(s.date.slice(8))}</b></div>
+    <div class="mid"><strong>${esc(j.name)}</strong><span>${esc(detail)}</span></div>
+    <div class="end"><strong>${money(shiftEarnings(s))}</strong><span>${hrs(paidH(s))} h</span></div>
+    ${withDelete ? `<button class="link" data-act="del" aria-label="Delete shift on ${fmtDate(s.date)}" style="color:var(--muted);font-size:18px;padding:4px">×</button>` : ''}</div></div>`;
+}
+function renderShifts() {
+  const list = (pdata(cur.start).shifts || []).slice().sort((a, b) => (b.date + (b.start || '')).localeCompare(a.date + (a.start || '')));
+  const el = $('shiftList');
+  if (!list.length) { el.innerHTML = `<div class="empty"><span>No shifts logged for ${fmtDate(cur.start)} – ${fmtDate(cur.end)}.</span><button class="btn" id="emptyAdd" style="padding:0 20px">Add your first shift</button></div>`; $('emptyAdd').onclick = () => openAdd(); return; }
+  el.innerHTML = list.map(s => shiftRow(s, true)).join('');
+  el.querySelectorAll('.item').forEach(it => {
+    const id = it.dataset.id, row = it.querySelector('.row'), s = list.find(x => (x.id || '') === id);
+    const del = () => { const p = pdata(cur.start); p.shifts = p.shifts.filter(x => x !== s); periods[cur.start] = p; store.savePeriod(cur.start); render(); toast('Shift deleted'); };
+    it.querySelector('.del').onclick = del;
+    const x = it.querySelector('[data-act="del"]'); let armed = false;
+    x.onclick = () => { if (!armed) { armed = true; row.style.transform = 'translateX(-92px)'; setTimeout(() => { armed = false; row.style.transform = ''; }, 3000); } };
+    // swipe left to reveal Delete
+    let sx = null, dx = 0;
+    row.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; sx = e.clientX; dx = 0; row.style.transition = 'none'; });
+    row.addEventListener('pointermove', e => { if (sx === null) return; dx = Math.min(0, e.clientX - sx); row.style.transform = `translateX(${Math.max(-110, dx)}px)`; });
+    const endSwipe = () => { if (sx === null) return; row.style.transition = ''; row.style.transform = dx < -50 ? 'translateX(-92px)' : ''; sx = null; };
+    row.addEventListener('pointerup', endSwipe); row.addEventListener('pointercancel', endSwipe); row.addEventListener('pointerleave', endSwipe);
+  });
+}
+
+// ----- Pay: this cheque -----
+const STUB_FIELDS = [['hours', 'Hours paid'], ['gross', 'Current earnings'], ['cpp', 'CPP'], ['ei', 'EI'], ['fedTax', 'Federal Inc Tax'], ['bcTax', 'BC Income Tax'], ['dues', 'Union dues'], ['net', 'Cheque amount (net)']];
+let payView = 'cheque';
+function setPayView(v) { payView = v; $('pvCheque').setAttribute('aria-pressed', v === 'cheque'); $('pvYear').setAttribute('aria-pressed', v === 'year'); $('payCheque').hidden = v !== 'cheque'; $('payYear').hidden = v !== 'year'; $('payTitle').textContent = v === 'cheque' ? 'This cheque' : (settings.ytdStart.asOf || todayIso()).slice(0, 4); }
+function renderPay() {
+  $('pLabel').textContent = `${fmtDate(cur.start)} – ${fmtDate(cur.end, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  $('pSub').textContent = `Payday ${fmtDate(cur.payDate, { weekday: 'short', month: 'short', day: 'numeric' })}`;
+  const r = calcCur();
+  let html = `<table><thead><tr><th>Item</th><th class="r">Hours</th><th class="r">Rate / base</th><th class="r">Amount</th></tr></thead><tbody>`;
+  settings.jobs.forEach(j => {
+    const ls = r.lines.filter(l => l.job === j.id); if (!ls.length) return;
+    html += `<tr class="sub"><td colspan="4"><span class="tag ${j.union ? 'union' : ''}">${esc(j.name)}</span></td></tr>`;
+    ls.forEach(l => html += `<tr><td>${esc(l.label)}</td><td class="r">${l.hours ? hrs(l.hours) : ''}</td><td class="r">${l.rate ? fmtRate(l.rate) : l.base ? l.base.toFixed(2) : ''}</td><td class="r">${l.kind === 'deduction' ? '−' : ''}${l.amount.toFixed(2)}</td></tr>`);
+  });
+  const neg = v => (v ? '−' : '') + v.toFixed(2);
+  html += `<tr class="total"><td>Gross earnings</td><td class="r">${hrs(r.hours)}</td><td></td><td class="r">${r.gross.toFixed(2)}</td></tr>
+    <tr><td>CPP</td><td></td><td></td><td class="r">${neg(r.cpp)}</td></tr><tr><td>EI</td><td></td><td></td><td class="r">${neg(r.ei)}</td></tr>
+    <tr><td>Federal income tax</td><td></td><td></td><td class="r">${neg(r.fedTax)}</td></tr><tr><td>BC income tax</td><td></td><td></td><td class="r">${neg(r.bcTax)}</td></tr>
+    ${r.dues ? `<tr><td>Union dues (total)</td><td></td><td></td><td class="r">${neg(r.dues)}</td></tr>` : ''}
+    <tr class="total"><td>Net pay</td><td></td><td></td><td class="r">${r.net.toFixed(2)}</td></tr></tbody></table>`;
+  $('expected').innerHTML = html;
+  const f = $('stubForm'), stub = pdata(cur.start).stub || {};
+  if (!(f.dataset.period === cur.start && f.contains(document.activeElement))) {
+    f.dataset.period = cur.start;
+    f.innerHTML = STUB_FIELDS.map(([k, label]) => `<div class="field"><label for="stub-${k}">${label}</label><input id="stub-${k}" type="number" step="0.01" inputmode="decimal" value="${stub[k] ?? ''}"></div>`).join('');
+  }
+  const rows = E.reconcile(r, stub), el = $('compare');
+  if (!rows.length) { el.hidden = true; return; }
+  el.hidden = false;
+  const worst = rows.some(x => x.status === 'off') ? 'off' : rows.some(x => x.status === 'close') ? 'close' : 'match';
+  const word = { match: 'Match', close: 'Close', off: 'Off' };
+  el.innerHTML = `<h2>Stub vs. expected</h2><div class="verdict ${worst}">${{ match: 'Your stub matches what you logged.', close: 'Close enough: small differences are usually tax rounding.', off: 'Something doesn’t match. Check the red rows below.' }[worst]}</div>
+    <div class="tablewrap"><table><thead><tr><th>Item</th><th class="r">Expected</th><th class="r">Stub</th><th class="r">Diff</th><th></th></tr></thead><tbody>
+    ${rows.map(x => `<tr><td>${x.label}</td><td class="r">${x.key === 'hours' ? hrs(x.expected) : x.expected.toFixed(2)}</td><td class="r">${x.key === 'hours' ? hrs(x.actual) : x.actual.toFixed(2)}</td><td class="r">${x.diff > 0 ? '+' : ''}${x.diff.toFixed(2)}</td><td><span class="pill ${x.status}">${word[x.status]}</span></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+// ----- Pay: year -----
+function chequesFor(year) { // every pay period this year with shifts or a stub, oldest first
+  return Object.keys(periods).filter(st => { const p = periods[st]; return ((p.shifts || []).length || Object.keys(p.stub || {}).length) && E.periodFor(st).payDate.slice(0, 4) === year; })
+    .sort().map(st => {
+      const per = E.periodFor(st), p = periods[st], r = calcFor(st), vals = {}; let fromStub = false;
+      YTD_KEYS.forEach(([k]) => { const v = stubVal(p, k); vals[k] = v ?? r[k]; if (v !== null) fromStub = true; });
+      const rec = E.reconcile(r, p.stub || {});
+      const status = !fromStub ? 'est' : rec.some(x => x.status === 'off') ? 'off' : rec.some(x => x.status === 'close') ? 'close' : 'match';
+      return { start: st, end: per.end, payDate: per.payDate, vals, fromStub, status, hours: r.hours, aux: jobGross(r, 'aux'), union: jobGross(r, 'union'), net: vals.net };
+    });
+}
+function ytdAt(payDate) { // app's year-to-date totals up to and including a pay date
+  const S = settings.ytdStart, year = payDate.slice(0, 4), out = {}; YTD_KEYS.forEach(([k]) => out[k] = 0);
+  const useStart = S.asOf && S.asOf.slice(0, 4) === year && S.asOf <= payDate;
+  if (useStart) YTD_KEYS.forEach(([k]) => out[k] = Number(S[k]) || 0);
+  chequesFor(year).forEach(c => { if (c.payDate <= payDate && (!useStart || c.payDate > S.asOf)) YTD_KEYS.forEach(([k]) => out[k] += c.vals[k]); });
+  YTD_KEYS.forEach(([k]) => out[k] = E.r2(out[k]));
+  return out;
+}
+function renderYear() {
+  const today = todayIso(), S = settings.ytdStart, year = (S.asOf || today).slice(0, 4);
+  const cheques = chequesFor(year), paid = cheques.filter(c => c.payDate <= today);
+  const lastPaid = paid.length ? paid[paid.length - 1].payDate : (S.asOf || today);
+  const T = ytdAt(lastPaid > today ? today : lastPaid);
+  const ded = [['cpp', 'CPP', 'var(--accent)'], ['fedTax', 'Federal tax', 'color-mix(in srgb, var(--accent) 75%, var(--surface))'], ['ei', 'EI', 'color-mix(in srgb, var(--accent) 50%, var(--surface))'], ['bcTax', 'BC tax', 'color-mix(in srgb, var(--accent) 30%, var(--surface))'], ['dues', 'Union dues', 'var(--union-strong)']];
+  const dsum = ded.reduce((a, [k]) => a + T[k], 0);
+  const lastCheck = (settings.ytdChecks || []).slice().sort((a, b) => b.payDate.localeCompare(a.payDate))[0];
+  let chk = '';
+  if (lastCheck) { const app = ytdAt(lastCheck.payDate), off = YTD_KEYS.some(([k]) => lastCheck[k] !== undefined && Math.abs(lastCheck[k] - app[k]) > 1); chk = `<span class="chip ${off ? 'warn' : ''}">${off ? '⚠ Check stub YTD' : '✓ Matches stub YTD'}</span>`; }
+  $('ytdHero').innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div style="display:grid;gap:2px"><span class="label">Take-home so far · ${year}</span><span style="font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.05">${money(T.net)}</span></div>${chk}</div>
+    <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--muted);gap:8px;flex-wrap:wrap"><span>Gross <b style="color:var(--fg)">${money(T.gross)}</b></span><span>Deductions <b style="color:var(--fg)">${money(dsum)}</b></span></div>
+    ${dsum > 0 ? `<div class="stack" role="img" aria-label="${ded.map(([k, n]) => n + ' ' + money(T[k])).join(', ')}">${ded.map(([k, , c]) => T[k] > 0 ? `<i style="flex:${Math.max(T[k], dsum / 120)};background:${c}"></i>` : '').join('')}</div>
+    <div class="legend3">${ded.map(([k, n, c]) => `<span><span><i class="dot" style="background:${c};border-radius:2px"></i>${n}</span><b>${money(T[k])}</b></span>`).join('')}</div>` : ''}
+    ${!S.set ? `<p class="hint">${S.migrated ? 'Only CPP and EI are in your starting point so far.' : 'No starting point yet, so this only counts cheques logged in the app.'} Add one below.</p>` : `<p class="hint">Counting from your ${fmtDate(S.asOf, { month: 'short', day: 'numeric', year: 'numeric' })} stub, plus ${paid.filter(c => c.payDate > S.asOf).length} cheque${paid.filter(c => c.payDate > S.asOf).length === 1 ? '' : 's'} since.</p>`}`;
+  // chart: last 6 cheques
+  const show = cheques.slice(-6), max = Math.max(1, ...show.map(c => c.net));
+  $('ytdChart').innerHTML = show.length ? `<div class="bars" role="img" aria-label="${show.map(c => fmtDate(c.payDate) + ' ' + money(c.net) + (c.fromStub ? '' : ' estimate')).join('; ')}">
+    ${show.map(c => { const h = Math.max(8, Math.round(c.net / max * 120)), uf = c.aux + c.union > 0 ? c.union / (c.aux + c.union) : 0;
+      return `<div class="b"><span style="color:${c.fromStub ? 'var(--fg)' : 'var(--muted)'}">${money0(c.net)}</span><i class="${c.fromStub ? '' : 'est'}" style="height:${h}px;background:linear-gradient(180deg, var(--accent) ${Math.round((1 - uf) * 100)}%, var(--union-strong) ${Math.round((1 - uf) * 100)}%)"></i></div>`; }).join('')}</div>
+    <div class="blabels">${show.map(c => `<span>${fmtDate(c.payDate)}${c.fromStub ? '' : ' est.'}</span>`).join('')}</div>
+    <div class="legend"><span><i class="ia"></i>Auxiliary</span><span><i class="iu"></i>FSW · Union</span><span><i style="border:2px dashed var(--muted)"></i>Estimate (no stub yet)</span></div>` : '<p class="hint">Your cheques will show here once you log shifts.</p>';
+  // history
+  const hist = cheques.slice().reverse();
+  $('ytdHistory').innerHTML = hist.length ? hist.map(c => `<div class="item"><div class="row" style="cursor:pointer" data-st="${c.start}"><div class="mid"><strong>${fmtDate(c.payDate, { month: 'short', day: 'numeric' })}</strong><span>${fmtDate(c.start)} – ${fmtDate(c.end)} · ${hrs(c.hours)} h</span></div>
+    <div class="end"><strong>${money(c.net)}</strong></div><span class="pill ${c.status === 'est' ? 'est' : c.status}">${{ est: 'Estimate', match: 'Match', close: 'Close', off: 'Off' }[c.status]}</span></div></div>`).join('')
+    : '<div class="empty">No cheques yet this year.</div>';
+  $('ytdHistory').querySelectorAll('[data-st]').forEach(el => el.onclick = () => { cur = E.periodFor(el.dataset.st); setPayView('cheque'); render(); window.scrollTo(0, 0); });
+  // stub-YTD check form
+  const sel = $('ycPay'), opts = cheques.map(c => c.payDate).reverse();
+  if (document.activeElement !== sel) { const keep = sel.value; sel.innerHTML = opts.map(d => `<option value="${d}">${fmtDate(d, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</option>`).join('') || '<option value="">No cheques yet</option>'; if (opts.includes(keep)) sel.value = keep; }
+  const yf = $('ycForm'); if (!yf.contains(document.activeElement)) { const prev = (settings.ytdChecks || []).find(c => c.payDate === sel.value) || {}; yf.innerHTML = YTD_KEYS.map(([k, n]) => `<div class="field"><label for="yc-${k}">YTD ${n}</label><input id="yc-${k}" type="number" step="0.01" inputmode="decimal" value="${prev[k] ?? ''}"></div>`).join(''); }
+  renderYtdCheck();
+  // starting point form
+  const sf = $('ysForm'); if (!sf.contains(document.activeElement) && document.activeElement !== $('ysAsOf')) { $('ysAsOf').value = S.asOf || ''; sf.innerHTML = YTD_KEYS.map(([k, n]) => `<div class="field"><label for="ys-${k}">YTD ${n}</label><input id="ys-${k}" type="number" step="0.01" inputmode="decimal" value="${S[k] ?? ''}"></div>`).join(''); }
+  if (payView === 'year') $('payTitle').textContent = year;
+}
+function renderYtdCheck() {
+  const d = $('ycPay').value, c = (settings.ytdChecks || []).find(x => x.payDate === d), el = $('ycResult');
+  if (!d || !c) { el.innerHTML = ''; return; }
+  const app = ytdAt(d), rows = YTD_KEYS.filter(([k]) => c[k] !== undefined && c[k] !== null).map(([k, n]) => { const diff = E.r2(c[k] - app[k]), st = Math.abs(diff) < 0.01 ? 'match' : Math.abs(diff) <= 1 ? 'close' : 'off'; return `<tr><td>${n}</td><td class="r">${app[k].toFixed(2)}</td><td class="r">${Number(c[k]).toFixed(2)}</td><td class="r">${diff > 0 ? '+' : ''}${diff.toFixed(2)}</td><td><span class="pill ${st}">${{ match: 'Match', close: 'Close', off: 'Off' }[st]}</span></td></tr>`; });
+  el.innerHTML = `<div class="tablewrap"><table><thead><tr><th>YTD</th><th class="r">App</th><th class="r">Stub</th><th class="r">Diff</th><th></th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
+    <p class="hint">"App" adds your starting point and every cheque since, using stub numbers where you've entered them and estimates where you haven't.</p>`;
+}
+
+// ----- Calendar -----
+let calMonth = todayIso().slice(0, 7), calSel = todayIso();
 function shiftsByDate() { const m = {}; allShifts().forEach(s => (m[s.date] = m[s.date] || []).push(s)); return m; }
 function dayHours(list) { let a = 0, u = 0; (list || []).forEach(s => { const h = paidH(s); if (s.job === 'union') u += h; else a += h; }); return { a, u }; }
 function renderCalendar() {
   const [y, m] = calMonth.split('-').map(Number), first = new Date(Date.UTC(y, m - 1, 1)), lead = first.getUTCDay(), n = new Date(Date.UTC(y, m, 0)).getUTCDate();
-  $('calLabel').textContent = first.toLocaleDateString('en-CA', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  $('calLabel').textContent = first.toLocaleDateString('en-CA', { month: 'long', timeZone: 'UTC' });
+  $('calYear').textContent = 'Calendar · ' + y;
   const by = shiftsByDate(), today = todayIso();
-  let html = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => `<div class="dow">${d}</div>`).join('');
+  let html = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => `<div class="dow">${d}</div>`).join('');
   for (let i = 0; i < lead; i++) html += '<div class="day out" aria-hidden="true"></div>';
-  let tA = 0, tU = 0, days = 0, dA = 0, dU = 0;
+  let tA = 0, tU = 0, dW = 0;
   for (let d = 1; d <= n; d++) {
-    const iso = `${calMonth}-${String(d).padStart(2, '0')}`, { a, u } = dayHours(by[iso]), stat = E.statName(iso);
-    const cls = a && u ? 'both' : u ? 'uni' : a ? 'aux' : '';
-    if (a || u) { days++; tA += a; tU += u; if (a) dA++; if (u) dU++; }
-    const label = `${fmtDate(iso, { weekday: 'long', month: 'long', day: 'numeric' })}${stat ? ', ' + stat : ''}${a || u ? `: ${a ? hrs(a) + ' h non-union' : ''}${a && u ? ', ' : ''}${u ? hrs(u) + ' h union' : ''}` : ''}`;
-    html += `<button class="day ${cls}${iso === today ? ' today' : ''}${stat ? ' stat' : ''}" data-d="${iso}" aria-label="${esc(label)}" title="${esc(stat || '')}">
-      <span class="n">${d}</span><span class="h">${a || u ? hrs(a + u) + 'h' : ''}</span>
-      <span class="bars">${a ? '<i class="a"></i>' : ''}${u ? '<i class="u"></i>' : ''}</span></button>`;
+    const iso = `${calMonth}-${String(d).padStart(2, '0')}`, { a, u } = dayHours(by[iso]), stat = E.statName(iso), isPay = E.periodFor(iso).payDate === iso;
+    if (a || u) { dW++; tA += a; tU += u; }
+    const cls = a && u ? 'both' : u ? 'uni' : a ? 'aux' : isPay ? 'pay' : '';
+    const label = `${fmtDate(iso, { weekday: 'long', month: 'long', day: 'numeric' })}${stat ? ', ' + stat : ''}${isPay ? ', payday' : ''}${a ? `, ${hrs(a)} h auxiliary` : ''}${u ? `, ${hrs(u)} h union` : ''}`;
+    html += `<button class="day ${cls}${iso === today ? ' today' : ''}${stat ? ' stat' : ''}" data-d="${iso}" aria-label="${esc(label)}" ${iso === calSel ? 'style="box-shadow:0 0 0 3px var(--accent)"' : ''}>
+      <span class="n">${d}</span><span class="h">${a || u ? hrs(a + u) + 'h' : isPay && !(a || u) ? 'PAY' : stat ? '<span style="color:var(--bad);font-size:9px">STAT</span>' : ''}</span>
+      <span class="b">${a ? '<i class="ia"></i>' : ''}${u ? '<i class="iu"></i>' : ''}</span></button>`;
   }
   $('cal').innerHTML = html;
-  $('cal').querySelectorAll('.day[data-d]').forEach(b => b.onclick = () => openDay(b.dataset.d));
-  $('calTotals').innerHTML = `<h3>${$('calLabel').textContent}</h3>
-    <div class="totals"><div><small>Days worked</small><span class="num">${days}</span></div>
-      <div><small>Non-union</small><span class="num">${hrs(tA)} h</span></div>
-      <div><small>Union</small><span class="num">${hrs(tU)} h</span></div></div>
-    <p class="hint">${dA} day${dA === 1 ? '' : 's'} non-union · ${dU} day${dU === 1 ? '' : 's'} union · ${hrs(tA + tU)} h total</p>`;
+  $('cal').querySelectorAll('.day[data-d]').forEach(b => b.onclick = () => { calSel = b.dataset.d; renderCalendar(); openDay(calSel); });
+  $('calTotals').innerHTML = `<div class="tile"><span class="k">Days</span><span class="v">${dW}</span></div>
+    <div class="tile"><span class="k" style="color:var(--accent)">Auxiliary</span><span class="v">${hrs(tA)}<small> h</small></span></div>
+    <div class="tile"><span class="k" style="color:var(--union)">FSW · Union</span><span class="v">${hrs(tU)}<small> h</small></span></div>`;
+  renderDayCard($('calDay'), calSel, false);
 }
-function openDay(iso) {
+function renderDayCard(el, iso, inSheet) {
   const list = (shiftsByDate()[iso] || []).slice().sort((x, y) => (x.start || '99').localeCompare(y.start || '99'));
-  const stat = E.statName(iso), { a, u } = dayHours(list);
-  const rows = list.map(s => {
-    const j = jobById(s.job) || { name: s.job };
-    const times = s.start ? `${s.start}–${s.end}${s.breakMin ? ` · ${s.breakMin} min ${j.paidBreaks ? 'paid' : 'unpaid'} break` : ''}` : 'Hours only';
-    const type = s.job === 'union' ? (stat ? 'Stat holiday (overtime rates)' : 'Agreement rules') : E.PAY_TYPES[s.type || 'regular'].label;
-    return `<div class="shift"><div class="when"><strong><span class="tag ${j.union ? 'union' : ''}">${esc(j.name)}</span></strong><span>${times} · ${type}${s.note ? ' · ' + esc(s.note) : ''}</span></div><span class="num hrs">${hrs(paidH(s))} h</span><span></span></div>`;
-  }).join('');
-  $('sheet').innerHTML = `<div class="top"><div><h2 id="sheetTitle">${fmtDate(iso, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</h2>
-      ${stat ? `<p class="hint" style="color:var(--bad);margin:2px 0 0"><b>${stat}</b> (stat holiday)</p>` : ''}</div><button class="x" id="sheetClose" aria-label="Close">✕</button></div>
-    ${list.length ? `<div class="jobsplit">${a ? `<div class="jobrow"><span class="tag">${esc(jobById('aux').name)}</span><span></span><span class="num">${hrs(a)} h</span></div>` : ''}${u ? `<div class="jobrow"><span class="tag union">${esc(jobById('union').name)}</span><span></span><span class="num">${hrs(u)} h</span></div>` : ''}
-      <div class="jobrow" style="font-weight:600"><span>Total</span><span></span><span class="num">${hrs(a + u)} h</span></div></div>
-      <div class="shifts">${rows}</div>` : '<p class="empty">No shifts logged on this day.</p>'}
-    <button class="secondary" id="sheetAdd">Add a shift on this day</button>`;
-  $('sheetBg').hidden = false; $('sheetClose').focus();
-  $('sheetClose').onclick = closeDay;
-  $('sheetAdd').onclick = () => { closeDay(); cur = E.periodFor(iso); render(); $('fDate').value = iso; updateCalcHint(); showTab('hours', 'fStart'); };
+  const stat = E.statName(iso), { a, u } = dayHours(list), total = list.reduce((s, x) => s + shiftEarnings(x), 0);
+  el.innerHTML = `${inSheet ? '<div class="grab"></div>' : ''}<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+      <div><h2 id="${inSheet ? 'dayTitle' : ''}" style="font-size:18px">${fmtDate(iso, { weekday: 'long', month: 'short', day: 'numeric' })}</h2>${stat ? `<p class="hint" style="color:var(--bad)"><b>${esc(stat)}</b> · stat holiday</p>` : ''}</div>
+      ${list.length ? `<strong style="white-space:nowrap">${hrs(a + u)} h · ${money(total)}</strong>` : ''}${inSheet ? '<button class="link" id="dayClose" style="font-size:16px">Done</button>' : ''}</div>
+    ${list.length ? list.map(s => { const j = jobById(s.job) || { name: s.job }; return `<div class="dline"><span class="bar ${s.job === 'union' ? 'iu' : 'ia'}"></span><div class="mid"><strong>${esc(j.name)}</strong><span>${s.start ? `${t12(s.start)}–${t12(s.end)}` : 'Hours only'}${s.start && s.breakMin ? ` · ${s.breakMin} min ${j.paidBreaks ? 'paid' : 'unpaid'} break` : ''}</span></div><strong style="white-space:nowrap">${hrs(paidH(s))} h · ${money(shiftEarnings(s))}</strong></div>`; }).join('') : '<p class="hint">No shifts on this day.</p>'}
+    <button class="btn ghost" data-add="${iso}">Add a shift on this day</button>`;
+  el.querySelector('[data-add]').onclick = () => { closeDay(); openAdd(iso); };
+  if (inSheet) $('dayClose').onclick = closeDay;
 }
-function closeDay() { $('sheetBg').hidden = true; }
-$('sheetBg').addEventListener('click', e => { if (e.target === $('sheetBg')) closeDay(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('sheetBg').hidden) closeDay(); });
+function openDay(iso) { renderDayCard($('daySheet'), iso, true); $('dayBg').hidden = false; $('dayClose').focus(); }
+function closeDay() { $('dayBg').hidden = true; }
+$('dayBg').addEventListener('click', e => { if (e.target === $('dayBg')) closeDay(); });
 const shiftMonth = k => { const [y, m] = calMonth.split('-').map(Number), d = new Date(Date.UTC(y, m - 1 + k, 1)); calMonth = d.toISOString().slice(0, 7); renderCalendar(); };
 $('calPrev').onclick = () => shiftMonth(-1); $('calNext').onclick = () => shiftMonth(1);
 
-function showTab(name, focusId) {
-  ['hours', 'pay', 'calendar', 'seniority', 'settings'].forEach(t => { $('tab-' + t).hidden = t !== name; $('t-' + t).setAttribute('aria-selected', t === name); });
-  window.scrollTo(0, 0);
-  if (focusId) setTimeout(() => { const el = $(focusId); if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); } }, 50);
+// ----- Seniority -----
+function renderSeniority() {
+  const sen = settings.seniority, u = jobById('union'), t = E.seniorityTally(sen, allShifts(), 'union', null, u.paidBreaks);
+  const daysSince = t.lastWorked ? days(t.lastWorked, todayIso()) : null, m = new Date(todayIso() + 'T12:00:00').getMonth();
+  $('senSummary').innerHTML = `<div style="display:flex;gap:16px;align-items:center">${ringSvg(t.total / 1000, `${hrs(t.total)} of 1,000 hours`, 120, 12)}
+      <div style="display:grid;gap:4px"><span class="label">Hours worked</span><span style="font-size:32px;font-weight:800;line-height:1">${hrs(t.total)}</span>
+      <span class="hint">${t.reached1000 ? `<b style="color:var(--good)">${hrs(t.seniorityHours)} seniority hours</b> · in lieu 16%` : `${hrs(1000 - t.total)} h to go · in lieu 12% → 16% at 1,000`}</span></div></div>
+    <p class="hint">${t.reached1000 ? 'You accrue seniority on hours after your first 1,000 (Art. 5.01c).' : 'At 1,000 hours you start accruing seniority and in lieu goes to 16% (Art. 5.01c, 7.05b). Probation ends at 1,000 hours or 18 months (Art. 6.01).'} Lists are posted in January and July; next: ${m < 6 ? 'July' : 'January'}.</p>
+    ${daysSince !== null ? `<p class="hint">Last union shift: ${fmtDate(t.lastWorked, { month: 'short', day: 'numeric', year: 'numeric' })}${daysSince > 120 ? ` · <b style="color:var(--bad)">${daysSince} days ago. Seniority is lost after 183 days inactive (Art. 5.03c).</b>` : ''}</p>` : ''}`;
+  const starts = Object.keys(periods).filter(st => (periods[st].shifts || []).some(s => s.job === 'union' && s.date > sen.asOf)).sort();
+  let run = Number(sen.hours) || 0, rows = `<tr><td>Starting hours (to ${fmtDate(sen.asOf)})</td><td class="r"></td><td class="r">${hrs(run)}</td></tr>`;
+  starts.forEach(st => { const h = (periods[st].shifts || []).filter(s => s.job === 'union' && s.date > sen.asOf).reduce((a, s) => a + paidH(s), 0), before = run; run += h; const p = E.periodFor(st);
+    rows += `<tr><td>${fmtDate(p.start)} – ${fmtDate(p.end)}${before < 1000 && run >= 1000 ? ' <span class="pill match">1,000 h</span>' : ''}</td><td class="r">+${hrs(h)}</td><td class="r">${hrs(run)}</td></tr>`; });
+  $('senTab').innerHTML = `<table><thead><tr><th>Pay period</th><th class="r">Union hrs</th><th class="r">Running total</th></tr></thead><tbody>${rows}</tbody></table>`;
+  const checks = (sen.checks || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+  $('checks').innerHTML = checks.length ? `<table><thead><tr><th>List date</th><th class="r">List</th><th class="r">Mine</th><th class="r">Diff</th><th></th></tr></thead><tbody>${checks.map(c => {
+    const mine = E.seniorityTally(sen, allShifts(), 'union', c.date, u.paidBreaks).total, diff = E.r2(c.hours - mine), st = Math.abs(diff) < 0.01 ? 'match' : Math.abs(diff) <= 1 ? 'close' : 'off';
+    return `<tr><td>${fmtDate(c.date, { month: 'short', day: 'numeric', year: 'numeric' })}</td><td class="r">${hrs(c.hours)}</td><td class="r">${hrs(mine)}</td><td class="r">${diff > 0 ? '+' : ''}${diff.toFixed(2)}</td><td><span class="pill ${st}">${{ match: 'Match', close: 'Close', off: 'Off' }[st]}</span></td></tr>`; }).join('')}</tbody></table>` : '';
+  if (!['senAsOf', 'senHours'].includes(document.activeElement && document.activeElement.id)) { $('senAsOf').value = sen.asOf; $('senHours').value = sen.hours ?? 0; }
+  if (!$('chkDate').value) $('chkDate').value = todayIso();
 }
-$('t-hours').onclick = () => showTab('hours'); $('t-pay').onclick = () => showTab('pay'); $('t-settings').onclick = () => showTab('settings'); $('t-seniority').onclick = () => showTab('seniority'); $('t-calendar').onclick = () => showTab('calendar');
 
+// ----- Settings -----
+function tplName(t) { return `${t.job === 'union' ? 'FSW' : 'Aux'} · ${t12(t.start).replace(':00', '')}–${t12(t.end).replace(':00', '')}`; }
+function renderSettings() {
+  const p = $('jobsPanel'), a = jobById('aux'), u = jobById('union');
+  if (!p.contains(document.activeElement)) {
+    p.innerHTML = `<h2>Departments</h2>
+      <div style="display:flex;gap:8px;align-items:center"><span class="tag">${esc(a.name)}</span><span class="hint">non-union</span></div>
+      <div class="grid2">
+        <div class="field"><label for="aRate">Hourly rate ($)</label><input id="aRate" type="number" step="0.01" inputmode="decimal" value="${a.rate ?? ''}"></div>
+        <div class="field"><label for="aInLieu">In lieu of benefits (%)</label><input id="aInLieu" type="number" step="0.5" inputmode="decimal" value="${a.inLieuPct}"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px"><span class="tag union">${esc(u.name)}</span><span class="hint">Facility Service Worker – Auxiliary</span></div>
+      <p class="hint">Richmond Olympic Oval / CUPE 718-09 agreement, July 1, 2024 – June 30, 2028.</p>
+      <div class="tablewrap"><table><tbody>
+        ${u.rates.map((r, i) => { const nx = u.rates[i + 1] && u.rates[i + 1].from, now = todayIso() >= r.from && (!nx || todayIso() < nx); return `<tr><td>Rate from ${fmtDate(r.from, { month: 'short', day: 'numeric', year: 'numeric' })}</td><td class="r"><b>$${Number(r.rate).toFixed(2)}</b> ${now ? '<span class="pill match">Now</span>' : ''}</td></tr>`; }).join('')}
+        <tr><td>Shift differential</td><td class="r">$1.00/h, 7 pm–7 am</td></tr>
+        <tr><td>Overtime 1.5×</td><td class="r">past 8 h/day or 40 h/week</td></tr>
+        <tr><td>Overtime 2×</td><td class="r">past 12 h/day or 48 h/week</td></tr>
+        <tr><td>Stat holiday worked</td><td class="r">overtime rates, all hours</td></tr>
+        <tr><td>In lieu of benefits</td><td class="r">12%, 16% after 1,000 h</td></tr>
+      </tbody></table></div>
+      <p class="hint">These come from the agreement and can't be changed here.</p>
+      <div class="field"><label for="uDues">Union dues (% of union pay, not counting in lieu)</label><input id="uDues" type="number" step="0.01" inputmode="decimal" value="${u.duesPct}"></div>
+      <label class="toggle"><input type="checkbox" id="uPaidBrk" ${u.paidBreaks ? 'checked' : ''}> Meal breaks are paid (Letter of Understanding #1)</label>
+      <label class="toggle"><input type="checkbox" id="duesOk" ${settings.duesConfirmed ? 'checked' : ''}> The union dues % is the exact figure</label>`;
+  }
+  $('tplList').innerHTML = settings.templates.length ? settings.templates.map(t => `<div style="display:flex;align-items:center;gap:10px;justify-content:space-between"><span class="tag ${t.job === 'union' ? 'union' : ''}" style="font-size:13px;text-transform:none">${esc(tplName(t))}</span><span class="hint" style="flex:1">${t.breakMin ? t.breakMin + ' min break' : 'no break'}</span><button class="btn ghost" data-tdel="${esc(t.id)}" style="height:36px;padding:0 12px">Remove</button></div>`).join('') : '<p class="hint">No quick picks yet.</p>';
+  $('tplList').querySelectorAll('[data-tdel]').forEach(b => b.onclick = () => { settings.templates = settings.templates.filter(t => t.id !== b.dataset.tdel); store.saveSettings(); render(); toast('Quick pick removed'); });
+  $('backupCard').hidden = !HAS_BACKUP;
+  const R = E.RATES;
+  $('ratesTable').innerHTML = `<tbody><tr><td>CPP</td><td class="r">5.95% over $134.62/period · max $4,230.45</td></tr><tr><td>EI</td><td class="r">1.63% · max $1,123.07</td></tr>
+    <tr><td>Federal</td><td class="r">14% to $58,523 · BPA $${R.fed.bpa.toLocaleString()}</td></tr><tr><td>BC</td><td class="r">5.60% to $50,363 · BPA $${R.bc.bpa.toLocaleString()}</td></tr>
+    <tr><td>BC Jul–Dec 2026 payroll</td><td class="r">6.14% · reduction up to $805</td></tr></tbody>`;
+}
+
+// ---------- add-shift sheet ----------
+let selJob = 'aux', selTpl = null;
+function openAdd(date) {
+  $('fDate').value = date || ((todayIso() >= cur.start && todayIso() <= cur.end) ? todayIso() : cur.start);
+  $('fErr').hidden = true; selTpl = null; $('addBg').hidden = false; setJob(selJob); renderChips(); updatePreview();
+}
+function closeAdd() { $('addBg').hidden = true; }
+function setJob(j) {
+  selJob = j; $('jobAux').setAttribute('aria-pressed', j === 'aux'); $('jobUnion').setAttribute('aria-pressed', j === 'union');
+  $('fTypeLine').hidden = j === 'union';
+  const pb = jobById(j).paidBreaks; $('fBreakLbl').textContent = `Meal break, min (${pb ? 'paid' : 'unpaid'})`;
+  renderChips(); updatePreview();
+}
+function renderChips() {
+  const el = $('chips');
+  el.innerHTML = settings.templates.map(t => `<button class="${t.job === 'union' ? 'u' : ''}" data-t="${esc(t.id)}" aria-pressed="${selTpl === t.id}">${esc(tplName(t))}</button>`).join('') + '<button class="add" id="tplSave">+ Save as quick pick</button>';
+  el.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { const t = settings.templates.find(x => x.id === b.dataset.t); selTpl = t.id; $('fHoursOnly').checked = false; toggleHoursOnly(); $('fStart').value = t.start; $('fEnd').value = t.end; $('fBreak').value = t.breakMin || 0; if (t.type) $('fType').value = t.type; setJob(t.job); });
+  $('tplSave').onclick = () => {
+    if ($('fHoursOnly').checked || !$('fStart').value || !$('fEnd').value) { toast('Set a start and end time first'); return; }
+    const t = { id: 't' + Math.random().toString(36).slice(2, 8), job: selJob, start: $('fStart').value, end: $('fEnd').value, breakMin: Number($('fBreak').value) || 0, type: selJob === 'union' ? 'regular' : $('fType').value };
+    if (settings.templates.some(x => x.job === t.job && x.start === t.start && x.end === t.end && x.breakMin === t.breakMin)) { toast('That quick pick already exists'); return; }
+    settings.templates.push(t); selTpl = t.id; store.saveSettings(); renderChips(); renderSettings(); toast('Quick pick saved');
+  };
+}
+function formShift() {
+  const s = { date: $('fDate').value, job: selJob, type: selJob === 'union' ? 'regular' : $('fType').value };
+  if ($('fHoursOnly').checked) s.hours = Number($('fHours').value) || 0; else { s.start = $('fStart').value; s.end = $('fEnd').value; s.breakMin = Number($('fBreak').value) || 0; }
+  return s;
+}
+function updatePreview() {
+  const s = formShift(), el = $('fPreview');
+  if (!s.date || !(E.shiftHours(s) > 0)) { el.innerHTML = `<span class="k ${selJob === 'union' ? '' : 'a'}">This shift earns</span><span class="amt">$0.00</span><span class="note">Enter a date and times to see what the shift earns.</span>`; return; }
+  const st = E.periodFor(s.date).start, base = pdata(st).shifts || [];
+  const before = calcFor(st, false, base), after = calcFor(st, false, base.concat([s]));
+  const key = l => l.job + '|' + l.label + '|' + (l.rate || 0).toFixed(4);
+  const bm = {}; before.lines.forEach(l => { if (l.kind === 'earning') bm[key(l)] = l; });
+  const rows = []; let ot = false;
+  after.lines.filter(l => l.kind === 'earning' && l.job === selJob).forEach(l => { const b = bm[key(l)], dh = E.r2((l.hours || 0) - (b ? b.hours || 0 : 0)), da = E.r2(l.amount - (b ? b.amount : 0)); if (Math.abs(da) < 0.005) return; if (/OT|Stat/.test(l.label)) ot = true;
+    rows.push(`<div><span>${esc(l.label)}${dh && l.rate ? ` · ${hrs(dh)} h × ${money(l.rate)}` : ''}</span><b>${money(da)}</b></div>`); });
+  const earn = E.r2(after.gross - before.gross), stat = E.statName(s.date);
+  el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:8px"><div style="display:grid;gap:4px"><span class="k ${selJob === 'union' ? '' : 'a'}">This shift earns</span><span class="amt">${money(earn)}</span></div>
+    <span class="badge ${ot ? 'ot' : ''}">${hrs(paidH(s))} h · ${stat ? esc(stat) : ot ? 'includes overtime' : 'no overtime'}</span></div>
+    <div class="rows">${rows.join('')}</div><span class="note">Before union dues and tax. Counts the other shifts already logged that day and week.</span>`;
+}
+function toggleHoursOnly() { const on = $('fHoursOnly').checked; $('fTimes').hidden = on; $('fBreakLine').hidden = on; $('fHoursLine').hidden = !on; updatePreview(); }
+['fStart', 'fEnd', 'fBreak', 'fType', 'fDate', 'fHours'].forEach(id => $(id).addEventListener('input', () => { if (['fStart', 'fEnd', 'fBreak'].includes(id)) { selTpl = null; renderChips(); } updatePreview(); }));
+$('fHoursOnly').addEventListener('change', toggleHoursOnly);
+$('jobAux').onclick = () => { selTpl = null; setJob('aux'); }; $('jobUnion').onclick = () => { selTpl = null; setJob('union'); };
+$('addCancel').onclick = closeAdd; $('fab').onclick = () => openAdd();
+$('addBg').addEventListener('click', e => { if (e.target === $('addBg')) closeAdd(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAdd(); closeDay(); } });
+$('addShift').onclick = () => {
+  const s = formShift(), err = $('fErr'); err.hidden = true;
+  if (!s.date) { err.textContent = 'Pick a date for the shift.'; err.hidden = false; return; }
+  if (!(E.shiftHours(s) > 0)) { err.textContent = 'This shift has 0 hours. Check the start, end and break.'; err.hidden = false; return; }
+  const per = E.periodFor(s.date), p = periods[per.start] || { shifts: [], stub: {} };
+  p.shifts = (p.shifts || []).concat([{ id: Math.random().toString(36).slice(2, 10), ...s }]);
+  periods[per.start] = p; store.savePeriod(per.start); cur = per; calSel = s.date; calMonth = s.date.slice(0, 7);
+  closeAdd(); render(); toast(`Added ${hrs(paidH(s))} h · ${jobById(s.job).name}`);
+};
+
+// ---------- other actions ----------
+$('saveStub').onclick = () => {
+  const stub = {}; STUB_FIELDS.forEach(([k]) => { const v = $('stub-' + k).value; if (v !== '') stub[k] = Number(v); });
+  const p = pdata(cur.start); p.stub = stub; periods[cur.start] = p; store.savePeriod(cur.start);
+  document.activeElement && document.activeElement.blur(); render(); $('compare').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+$('pPrev').onclick = () => { cur = E.shiftPeriod(cur, -1); render(); }; $('pNext').onclick = () => { cur = E.shiftPeriod(cur, 1); render(); };
+$('pvCheque').onclick = () => setPayView('cheque'); $('pvYear').onclick = () => setPayView('year');
+$('ycPay').onchange = () => { $('ycForm').innerHTML = ''; renderYear(); };
+$('ycSave').onclick = () => {
+  const d = $('ycPay').value; if (!d) { toast('Log a cheque first'); return; }
+  const c = { payDate: d }; YTD_KEYS.forEach(([k]) => { const v = $('yc-' + k).value; if (v !== '') c[k] = Number(v); });
+  if (Object.keys(c).length < 2) { toast('Enter at least one YTD figure'); return; }
+  settings.ytdChecks = (settings.ytdChecks || []).filter(x => x.payDate !== d).concat([c]); document.activeElement && document.activeElement.blur(); store.saveSettings(); render(); toast('Compared');
+};
+$('ysSave').onclick = () => {
+  const d = $('ysAsOf').value; if (!d) { toast('Enter the stub’s pay date'); return; }
+  const S = { asOf: d, set: true }; YTD_KEYS.forEach(([k]) => { const v = $('ys-' + k).value; if (v !== '') S[k] = Number(v); });
+  settings.ytdStart = S; document.activeElement && document.activeElement.blur(); store.saveSettings(); render(); toast('Starting point saved');
+};
+$('saveSettings').onclick = () => {
+  const a = jobById('aux'), u = jobById('union'), n = id => $(id).value === '' ? null : Number($(id).value);
+  a.rate = n('aRate'); a.inLieuPct = n('aInLieu') || 0; u.duesPct = n('uDues') || 0; u.paidBreaks = $('uPaidBrk').checked; settings.duesConfirmed = $('duesOk').checked;
+  document.activeElement && document.activeElement.blur(); store.saveSettings(); render(); toast('Settings saved');
+};
+$('saveSen').onclick = () => {
+  settings.seniority.asOf = $('senAsOf').value || settings.seniority.asOf; settings.seniority.hours = Number($('senHours').value) || 0; settings.seniority.startSet = true;
+  document.activeElement && document.activeElement.blur(); store.saveSettings(); render(); toast('Starting hours saved');
+};
+$('addCheck').onclick = () => {
+  const d = $('chkDate').value, h = Number($('chkHours').value);
+  if (!d || $('chkHours').value === '' || !(h >= 0)) { toast('Enter the list date and your hours on it'); return; }
+  settings.seniority.checks = (settings.seniority.checks || []).filter(c => c.date !== d).concat([{ date: d, hours: h }]);
+  $('chkHours').value = ''; store.saveSettings(); render(); toast('List compared');
+};
+$('toCal').onclick = () => showTab('calendar');
+function focusLater(id) { setTimeout(() => { const el = $(id); if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); } }, 60); }
+function showTab(name, focusId) {
+  ['home', 'pay', 'calendar', 'seniority', 'settings'].forEach(t => { $('tab-' + t).hidden = t !== name; $('t-' + t).setAttribute('aria-selected', t === name); });
+  $('fab').hidden = !['home', 'calendar'].includes(name);
+  window.scrollTo(0, 0); if (focusId) focusLater(focusId);
+}
+['home', 'pay', 'calendar', 'seniority', 'settings'].forEach(t => $('t-' + t).onclick = () => showTab(t));
+$('welcomeFresh').onclick = () => { firstRun = false; $('welcome').hidden = true; store.saveSettings(); showTab('settings', 'aRate'); };
+
+render();
 initStore();
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 })();
 </script>
+
 </body>
 </html>

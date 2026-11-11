@@ -232,6 +232,24 @@ tr.total td { font-weight: 800; border-bottom: 0; border-top: 2px solid var(--fg
 .preview .badge { font-size: 12px; font-weight: 700; color: #0f1e2a; background: #8fd9a8; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
 .preview .badge.ot { background: #f2c14e; }
 
+/* Check-off (borrowed from the Overtime Tracker) */
+.chk { position: relative; width: 28px; height: 28px; flex: none; display: grid; place-items: center; }
+.chk input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.chk span { width: 26px; height: 26px; border-radius: 99px; border: 2px solid var(--line-2); display: grid; place-items: center; background: var(--surface); }
+.chk input:checked + span { background: var(--good); border-color: var(--good); }
+.chk input:checked + span::after { content: ""; width: 7px; height: 12px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg) translate(-1px, -1px); }
+.chk input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.st { font-size: 12px; font-weight: 700; }
+.st.ok { color: var(--good); } .st.wait { color: var(--muted); } .st.late { color: var(--warn); } .st.sch { color: var(--accent); }
+.st .diff { color: var(--bad); font-weight: 600; }
+.notel { font-size: 13px; color: var(--muted); font-style: italic; }
+.item.done .mid strong { opacity: .75; }
+.seg3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.banner { background: var(--accent-soft); border-radius: 16px; padding: 12px 14px; display: grid; gap: 6px; font-size: 14px; }
+.banner ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.banner .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.chip.btnchip { border: 0; cursor: pointer; }
+
 /* Floating button and tab bar */
 .fab { position: fixed; right: max(20px, calc(env(safe-area-inset-right, 0px) + 12px)); bottom: calc(100px + env(safe-area-inset-bottom, 0px)); width: 60px; height: 60px; border-radius: 20px; border: 0; background: var(--accent); display: grid; place-items: center; box-shadow: 0 10px 24px rgba(11,106,136,.4); z-index: 8; }
 .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; background: var(--tabbar); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-top: 1px solid var(--line); padding: 8px max(10px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); }
@@ -251,7 +269,8 @@ tr.total td { font-weight: 800; border-bottom: 0; border-top: 2px solid var(--fg
 <div class="app">
   <!-- HOME -->
   <section class="tab" id="tab-home">
-    <div class="ttl"><div><span class="eyebrow" id="homeDate"></span><h1>Home</h1></div><span class="chip" id="sync">Loading…</span></div>
+    <div class="ttl"><div><span class="eyebrow" id="homeDate"></span><h1>Home</h1></div><button class="chip btnchip" id="sync" type="button">Loading…</button></div>
+    <div class="banner" id="whatsNew" hidden><div class="row"><b id="wnTitle"></b><button class="link" id="wnX" aria-label="Dismiss">✕</button></div><ul id="wnList"></ul></div>
     <div class="card" id="welcome" hidden>
       <h2>Welcome</h2>
       <p class="hint">Your hours and pay stay on this phone. Already have a backup file? Restore it to pick up where you left off.</p>
@@ -262,8 +281,10 @@ tr.total td { font-weight: 800; border-bottom: 0; border-top: 2px solid var(--fg
     <div class="hero" id="hero"></div>
     <div class="tiles" id="tiles"></div>
     <div class="sec"><h2>Shifts this period</h2><button class="link" id="toCal">See calendar</button></div>
+    <div class="seg seg3" role="group" aria-label="Show"><button data-f="wait" aria-pressed="false">Waiting</button><button data-f="done" aria-pressed="false">On stub</button><button data-f="all" aria-pressed="true">All</button></div>
+    <button class="btn ghost" id="tickAll" hidden style="color:var(--good);border-color:var(--good)"></button>
     <div class="list" id="shiftList"></div>
-    <p class="hint" style="text-align:center">Swipe a shift left to delete it.</p>
+    <p class="hint" style="text-align:center">Tick a shift once it shows on your pay stub. Tap a shift to edit it or add a note; swipe left to delete.</p>
   </section>
 
   <!-- PAY -->
@@ -280,6 +301,7 @@ tr.total td { font-weight: 800; border-bottom: 0; border-top: 2px solid var(--fg
         <button class="btn" id="saveStub">Check my pay</button>
       </div>
       <div class="card" id="compare" hidden></div>
+      <button class="btn ghost" id="tickAllPay" hidden></button>
     </div>
     <div id="payYear" style="display:grid;gap:16px" hidden>
       <div class="card" id="ytdHero"></div>
@@ -354,7 +376,7 @@ tr.total td { font-weight: 800; border-bottom: 0; border-top: 2px solid var(--fg
       <input type="file" id="restoreFile" accept=".json,application/json" hidden>
       <div id="restoreConfirm" hidden style="display:grid;gap:8px">
         <p class="err" id="restoreMsg"></p>
-        <div class="grid2"><button class="btn danger" id="restoreYes">Replace my data</button><button class="btn ghost" id="restoreNo">Cancel</button></div>
+        <div class="grid2"><button class="btn" id="restoreMerge">Add what's missing</button><button class="btn danger" id="restoreYes">Replace everything</button></div><button class="btn ghost" id="restoreNo">Cancel</button>
       </div>
     </div>
     <div class="card">
@@ -362,6 +384,7 @@ tr.total td { font-weight: 800; border-bottom: 0; border-top: 2px solid var(--fg
       <div class="tablewrap"><table id="ratesTable"></table></div>
       <p class="hint">Taxes are estimated with the CRA's per-period method, so they can differ from the stub by a few cents to a dollar. CPP2 (on earnings over $74,600) isn't included.</p>
     </div>
+    <details class="card"><summary>What's new in <span id="appVersion2"></span></summary><ul id="wnList2" class="hint" style="padding-left:18px;margin:8px 0 0;display:grid;gap:4px"></ul></details>
     <p class="hint" style="text-align:center">Shift &amp; Stub Tracker <span id="appVersion"></span></p>
   </section>
 </div>
@@ -392,11 +415,24 @@ tr.total td { font-weight: 800; border-bottom: 0; border-top: 2px solid var(--fg
     <div class="line" id="fBreakLine"><label for="fBreak" id="fBreakLbl">Meal break (min)</label><input type="number" id="fBreak" inputmode="numeric" min="0" step="5" value="30"></div>
     <div class="line" id="fHoursLine" hidden><label for="fHours">Hours</label><input type="number" id="fHours" inputmode="decimal" min="0" step="0.25" placeholder="0"></div>
     <div class="line" id="fTypeLine"><label for="fType">Pay type</label><select id="fType"><option value="regular">Regular</option><option value="ot15">Overtime 1.5×</option><option value="ot2">Overtime 2×</option><option value="stat">Stat holiday pay</option></select></div>
+    <div class="line"><label for="fNote">Note</label><input type="text" id="fNote" placeholder="optional" maxlength="140" style="font-weight:600;color:var(--fg)"></div>
     <div class="line"><label for="fHoursOnly">Only know the total hours</label><input type="checkbox" id="fHoursOnly" style="width:22px;height:22px;accent-color:var(--accent)"></div>
   </div>
   <div class="preview" id="fPreview"></div>
   <p class="err" id="fErr" hidden></p>
   <button class="btn" id="addShift">Add shift</button>
+  <button class="btn ghost" id="delShift" hidden style="color:var(--bad)">Delete this shift</button>
+</div></div>
+
+<div class="sheet-bg" id="confBg" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="confTitle">
+  <div class="grab"></div>
+  <div class="top"><button class="link" id="confNo" style="font-size:16px">Cancel</button><h2 id="confTitle">Confirm on pay stub?</h2><span style="width:52px"></span></div>
+  <div class="card" style="gap:6px"><strong id="confWhat"></strong><p class="hint" id="confMsg"></p></div>
+  <div class="grid2" id="confFields">
+    <div class="field"><label for="confStub">Pay stub date</label><input type="date" id="confStub"></div>
+    <div class="field"><label for="confPaid">Amount on stub (optional)</label><input type="number" id="confPaid" step="0.01" inputmode="decimal"></div>
+  </div>
+  <button class="btn" id="confYes">Confirm</button>
 </div></div>
 
 <div class="sheet-bg" id="dayBg" hidden><div class="sheet" id="daySheet" role="dialog" aria-modal="true" aria-labelledby="dayTitle"></div></div>
@@ -635,7 +671,16 @@ return { RATES, PAY_TYPES, calcPeriod, shiftHours, periodFor, shiftPeriod, recon
 </script>
 <script>
 (() => {
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.3.0';
+const WHATS_NEW = [
+  'Tick off each shift once it shows on your pay stub. Each shift says Waiting, On stub or Scheduled, and flags a payday that has passed without a tick.',
+  'Filter shifts: Waiting, On stub or All.',
+  'Once a stub is entered, tick off every shift in that pay period in one tap.',
+  'Home shows how much pay is still waiting for a stub.',
+  'Tap a shift to edit it, add a note or delete it.',
+  'Backup chip counts changes since your last backup; tap it to back up.',
+  'Restoring a backup can now just add what’s missing instead of replacing everything.'
+];
 const $ = id => document.getElementById(id);
 const money = n => (n < 0 ? '−$' : '$') + Math.abs(n).toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const money0 = n => '$' + Math.round(n).toLocaleString('en-CA');
@@ -695,7 +740,7 @@ let settings = normalize(null);
 let periods = {}; // period start -> {shifts:[], stub:{}}
 let cur = E.periodFor(todayIso());
 let store = { saveSettings: async () => {}, savePeriod: async () => {} };
-let HAS_BACKUP = false, firstRun = false;
+let HAS_BACKUP = false, firstRun = false, listFilter = 'all', editing = null;
 function setSync(t, kind) { const el = $('sync'); el.textContent = t; el.className = 'chip' + (kind ? ' ' + kind : ''); }
 function toast(t) { const el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2000); }
 
@@ -705,12 +750,17 @@ const LS = 'shiftstub.v1', META = 'shiftstub.meta';
 function lsLoad() { try { const d = JSON.parse(localStorage.getItem(LS) || 'null'); if (d) { settings = normalize(d.settings); periods = d.periods || {}; } else firstRun = true; } catch (e) { firstRun = true; } }
 function meta() { try { return JSON.parse(localStorage.getItem(META) || '{}'); } catch (e) { return {}; } }
 function setMeta(m) { try { localStorage.setItem(META, JSON.stringify(Object.assign(meta(), m))); } catch (e) {} }
-function syncLabel() { const b = meta().lastBackup; setSync(b ? `Backed up ${fmtDate(b)}` : 'Not backed up', b && days(b, todayIso()) <= 14 ? '' : 'warn'); }
-function lsSave() { try { localStorage.setItem(LS, JSON.stringify({ settings, periods })); syncLabel(); } catch (e) { setSync('Not saved', 'warn'); } }
+// Backup chip: counts changes since the last backup (idea from the Overtime Tracker); tap it to back up
+function syncLabel() { const b = meta().lastBackup, n = meta().changes || 0;
+  if (n > 0) setSync(`Back up • ${n}`, 'warn'); else setSync(b ? `Backed up ${fmtDate(b)}` : 'Not backed up', b && days(b, todayIso()) <= 14 ? '' : 'warn'); }
+function lsSave(noCount) { try { localStorage.setItem(LS, JSON.stringify({ settings, periods })); if (!noCount) setMeta({ changes: (meta().changes || 0) + 1 }); syncLabel(); } catch (e) { setSync('Not saved', 'warn'); } }
 async function initStore() {
   lsLoad(); store = { saveSettings: async () => lsSave(), savePeriod: async () => lsSave() };
   syncLabel(); $('welcome').hidden = !firstRun; render();
-  const lastV = meta().appVersion; if (!firstRun && lastV && lastV !== APP_VERSION) setTimeout(() => toast('Updated to v' + APP_VERSION), 400); setMeta({ appVersion: APP_VERSION });
+  $('sync').onclick = doBackup;
+  const lastV = meta().appVersion;
+  if (!firstRun && lastV && lastV !== APP_VERSION) { setTimeout(() => toast('Updated to v' + APP_VERSION), 400); $('wnTitle').textContent = `Updated to v${APP_VERSION}: what's new`; $('wnList').innerHTML = WHATS_NEW.map(t => `<li>${esc(t)}</li>`).join(''); $('whatsNew').hidden = false; }
+  setMeta({ appVersion: APP_VERSION });
   try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (e) {}
 }
 function backupData() { return { app: 'shift-stub-tracker', version: 1, appVersion: APP_VERSION, exportedAt: new Date().toISOString(), settings, periods }; }
@@ -719,7 +769,7 @@ async function doBackup() {
   try {
     if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file], title: 'Shift & Stub backup' });
     else { const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
-    setMeta({ lastBackup: todayIso() }); syncLabel(); render(); toast('Backup made. Save it to iCloud Drive.');
+    setMeta({ lastBackup: todayIso(), changes: 0 }); syncLabel(); render(); toast('Backup made. Save it to iCloud Drive.');
   } catch (e) { toast(e && e.name === 'AbortError' ? 'Backup cancelled' : 'Backup didn’t work'); }
 }
 let pendingRestore = null;
@@ -730,7 +780,7 @@ function readBackupFile(file) {
       const d = JSON.parse(fr.result);
       if (d.app !== 'shift-stub-tracker' || !d.settings || typeof d.periods !== 'object') throw new Error('bad');
       pendingRestore = d; const n = Object.values(d.periods).reduce((a, p) => a + ((p.shifts || []).length), 0);
-      $('restoreMsg').textContent = `Backup from ${d.exportedAt ? fmtDate(d.exportedAt.slice(0, 10), { month: 'short', day: 'numeric', year: 'numeric' }) : 'unknown date'} with ${n} shift${n === 1 ? '' : 's'}. Restoring replaces everything on this phone.`;
+      $('restoreMsg').textContent = `Backup from ${d.exportedAt ? fmtDate(d.exportedAt.slice(0, 10), { month: 'short', day: 'numeric', year: 'numeric' }) : 'unknown date'} with ${n} shift${n === 1 ? '' : 's'}. "Add what's missing" keeps everything on this phone and adds shifts and stubs it doesn't have. "Replace everything" swaps in the backup.`;
       $('restoreConfirm').hidden = false; showTab('settings', 'restoreYes');
     } catch (e) { toast('That file isn’t a Shift & Stub backup'); }
   };
@@ -739,18 +789,31 @@ function readBackupFile(file) {
 function applyRestore() {
   if (!pendingRestore) return;
   settings = normalize(pendingRestore.settings); periods = pendingRestore.periods || {}; pendingRestore = null;
-  lsSave(); setMeta({ lastBackup: todayIso() }); syncLabel(); firstRun = false; $('welcome').hidden = true; $('restoreConfirm').hidden = true; render(); toast('Backup restored');
+  lsSave(true); setMeta({ lastBackup: todayIso(), changes: 0 }); syncLabel(); firstRun = false; $('welcome').hidden = true; $('restoreConfirm').hidden = true; render(); toast('Backup restored');
+}
+function mergeRestore() { // keep this phone's data; add shifts (by id) and stubs it doesn't have
+  if (!pendingRestore) return; let added = 0;
+  if (firstRun) settings = normalize(pendingRestore.settings);
+  Object.entries(pendingRestore.periods || {}).forEach(([st, bp]) => {
+    const p = periods[st] || { shifts: [], stub: {} }, have = new Set((p.shifts || []).map(x => x.id));
+    (bp.shifts || []).forEach(x => { if (!x.id || !have.has(x.id)) { p.shifts = (p.shifts || []).concat([{ ...x, id: x.id || newId() }]); added++; } });
+    if (!Object.keys(p.stub || {}).length && bp.stub && Object.keys(bp.stub).length) p.stub = bp.stub;
+    periods[st] = p;
+  });
+  pendingRestore = null; lsSave(); firstRun = false; $('welcome').hidden = true; $('restoreConfirm').hidden = true; render(); toast(`Added ${added} shift${added === 1 ? '' : 's'} from the backup`);
 }
 $('backupBtn').onclick = doBackup;
 $('restoreBtn').onclick = $('welcomeRestore').onclick = () => { $('restoreFile').value = ''; $('restoreFile').click(); };
 $('restoreFile').onchange = e => { const f = e.target.files && e.target.files[0]; if (f) readBackupFile(f); };
-$('restoreYes').onclick = applyRestore;
+$('restoreYes').onclick = applyRestore; $('restoreMerge').onclick = mergeRestore;
 $('restoreNo').onclick = () => { pendingRestore = null; $('restoreConfirm').hidden = true; };
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 
 
 // ---------- calculations ----------
 const jobById = id => settings.jobs.find(j => j.id === id);
+const newId = () => Math.random().toString(36).slice(2, 10);
+function ensureIds() { Object.values(periods).forEach(p => (p.shifts || []).forEach(s => { if (!s.id) s.id = newId(); })); }
 const pdata = start => periods[start] || { shifts: [], stub: {} };
 const allShifts = () => Object.values(periods).flatMap(p => p.shifts || []);
 const paidH = s => E.shiftHours(E.effShift(jobById(s.job), s));
@@ -774,14 +837,32 @@ function calcFor(start, withYtd = true, shiftsOverride) {
 }
 const calcCur = () => calcFor(cur.start);
 const jobGross = (r, id) => r.lines.filter(l => l.job === id && l.kind === 'earning').reduce((a, l) => a + l.amount, 0);
+// Check-off: a shift is waiting until it's ticked as on a pay stub; future shifts are scheduled
+const isWaiting = s => !s.confirmed && s.date <= todayIso();
+function waitingSummary() {
+  const t = todayIso(), list = allShifts().filter(isWaiting);
+  return { n: list.length, amt: list.reduce((a, s) => a + shiftEarnings(s), 0), late: list.filter(s => E.periodFor(s.date).payDate < t).length };
+}
+function shiftStatus(s) {
+  const t = todayIso(), pay = E.periodFor(s.date).payDate;
+  if (s.confirmed) { let h = `<span class="st ok">✓ On stub${s.stubDate ? ' ' + fmtDate(s.stubDate) : ''}</span>`;
+    if (s.paid != null && Math.abs(s.paid - shiftEarnings(s)) >= 0.01) h += `<span class="st diff"> · stub ${money(s.paid)} vs ${money(shiftEarnings(s))} expected</span>`; return h; }
+  if (s.date > t) return '<span class="st sch">Scheduled</span>';
+  if (pay < t) return `<span class="st late">Payday ${fmtDate(pay)} passed · not ticked</span>`;
+  const d = days(s.date, t); return `<span class="st wait">Waiting${d > 0 ? ' ' + d + ' day' + (d === 1 ? '' : 's') : ''} · payday ${fmtDate(pay)}</span>`;
+}
+function findShift(id) { for (const st of Object.keys(periods)) { const i = (periods[st].shifts || []).findIndex(x => x.id === id); if (i >= 0) return { st, i, s: periods[st].shifts[i] }; } return null; }
+function updateShift(id, changes) { const f = findShift(id); if (!f) return; periods[f.st].shifts[f.i] = { ...f.s, ...changes }; store.savePeriod(f.st); }
 function shiftEarnings(s) { // what one shift adds to its period's gross pay
   const st = E.periodFor(s.date).start, list = pdata(st).shifts || [];
-  return E.r2(calcFor(st, false).gross - calcFor(st, false, list.filter(x => x !== s)).gross);
+  return E.r2(calcFor(st, false).gross - calcFor(st, false, list.filter(x => x !== s && !(s.id && x.id === s.id))).gross);
 }
 
 // ---------- render ----------
 function render() {
-  $('appVersion').textContent = 'v' + APP_VERSION;
+  ensureIds();
+  $('appVersion').textContent = 'v' + APP_VERSION; $('appVersion2').textContent = 'v' + APP_VERSION;
+  $('wnList2').innerHTML = WHATS_NEW.map(t => `<li>${esc(t)}</li>`).join('');
   $('homeDate').textContent = new Date(todayIso() + 'T12:00:00').toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' });
   renderReminders(); renderHero(); renderTiles(); renderShifts(); renderPay(); renderYear(); renderCalendar(); renderSeniority(); renderSettings();
 }
@@ -812,7 +893,7 @@ function renderHero() {
   const amt = stubNet ?? r.net;
   $('hero').innerHTML = `<div class="row"><span class="kicker">${kicker}</span>${badge}</div>
     <div class="row" style="align-items:flex-end"><div style="display:grid;gap:4px;min-width:0"><span class="big">${money(amt)}</span>
-      <span class="cap">${stubNet !== null ? 'Take-home from your stub' : 'Estimated take-home'} · ${fmtDate(cur.start)} – ${fmtDate(cur.end)}</span></div>
+      <span class="cap">${stubNet !== null ? 'Take-home from your stub' : 'Estimated take-home'} · ${fmtDate(cur.start)} – ${fmtDate(cur.end)} · ${hrs(r.hours)} h</span></div>
       <div class="nav"><button id="hPrev" aria-label="Previous pay period">${svgChevL}</button><button id="hNext" aria-label="Next pay period">${svgChevR}</button></div></div>
     ${a + u > 0 ? `<div class="split" role="img" aria-label="Auxiliary ${money(a)}, FSW union ${money(u)}">${a ? `<i style="flex:${a};background:var(--hero-accent)"></i>` : ''}${u ? `<i style="flex:${u};background:var(--hero-union)"></i>` : ''}</div>
     <div class="legend2"><span><i class="dot" style="background:var(--hero-accent)"></i>Auxiliary ${money(a)}</span><span><i class="dot" style="background:var(--hero-union)"></i>FSW · Union ${money(u)}</span></div>` : `<span class="cap">No shifts logged for this period yet. Tap + to add one.</span>`}
@@ -833,11 +914,12 @@ function nextStat() { const t = todayIso(); for (let i = 0; i < 400; i++) { cons
 function renderTiles() {
   const t = E.seniorityTally(settings.seniority, allShifts(), 'union', null, jobById('union').paidBreaks);
   let a = 0, u = 0; (pdata(cur.start).shifts || []).forEach(s => s.job === 'union' ? u += paidH(s) : a += paidH(s));
-  const ns = nextStat();
+  const ns = nextStat(), W = waitingSummary();
   $('tiles').innerHTML = `<button class="tile center" id="tileSen" style="border:0;color:inherit">${ringSvg(t.total / 1000, `${hrs(t.total)} of 1,000 union hours`)}<span class="s" style="font-weight:600">${t.reached1000 ? `${hrs(t.seniorityHours)} h seniority` : `${Math.round(t.total).toLocaleString('en-CA')} / 1,000 h`}<br>union</span></button>
-    <div class="tile"><span class="k">This period</span><span class="v">${hrs(a + u)}<small> h</small></span><span class="s"><b style="color:var(--accent)">${hrs(a)}</b> aux · <b style="color:var(--union)">${hrs(u)}</b> FSW</span></div>
+    <button class="tile" id="tileWait" style="border:0;color:inherit;text-align:left"><span class="k">Waiting for stub</span><span class="v" style="font-size:22px">${money0(W.amt)}</span><span class="s">${W.n} shift${W.n === 1 ? '' : 's'}${W.late ? ` · <b style="color:var(--warn)">${W.late} past payday</b>` : ''}</span></button>
     <div class="tile"><span class="k">Next stat</span><span class="v" style="font-size:22px;color:var(--bad)">${ns ? fmtDate(ns[0]) : '–'}</span><span class="s">${ns ? esc(ns[1]) + ' · FSW at 1.5×' : ''}</span></div>`;
   $('tileSen').onclick = () => showTab('seniority');
+  $('tileWait').onclick = () => { listFilter = 'wait'; const w = allShifts().filter(isWaiting).sort((x, y) => x.date.localeCompare(y.date))[0]; if (w) cur = E.periodFor(w.date); render(); $('shiftList').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
 }
 
 function shiftRow(s, withDelete) {
@@ -848,32 +930,66 @@ function shiftRow(s, withDelete) {
   if (isU && s.start) { const pm = E.rooAuxEarnings({ ...jobById('union'), hoursBefore: 0 }, [E.effShift(jobById('union'), s)]).premHours; if (pm > 0) detail += ` · ${hrs(pm)} h night premium`; }
   if (st) detail += ` · ${st}`;
   if (!isU && s.type && s.type !== 'regular') detail += ` · ${E.PAY_TYPES[s.type].label}`;
-  if (s.note) detail += ` · ${s.note}`;
-  return `<div class="item" data-id="${esc(s.id || '')}">${withDelete ? '<button class="del" tabindex="-1">Delete</button>' : ''}<div class="row">
+  return `<div class="item${s.confirmed ? ' done' : ''}" data-id="${esc(s.id || '')}">${withDelete ? '<button class="del" tabindex="-1">Delete</button>' : ''}<div class="row" ${withDelete ? 'style="cursor:pointer"' : ''}>
+    ${withDelete ? `<label class="chk"><input type="checkbox" data-act="chk" ${s.confirmed ? 'checked' : ''} aria-label="${s.confirmed ? 'Untick' : 'Tick off'} ${esc(j.name)} shift on ${fmtDate(s.date, { weekday: 'long', month: 'long', day: 'numeric' })} as on pay stub"><span></span></label>` : ''}
     <div class="datebox${isU ? ' u' : ''}"><span>${wd}</span><b>${Number(s.date.slice(8))}</b></div>
-    <div class="mid"><strong>${esc(j.name)}</strong><span>${esc(detail)}</span></div>
-    <div class="end"><strong>${money(shiftEarnings(s))}</strong><span>${hrs(paidH(s))} h</span></div>
-    ${withDelete ? `<button class="link" data-act="del" aria-label="Delete shift on ${fmtDate(s.date)}" style="color:var(--muted);font-size:18px;padding:4px">×</button>` : ''}</div></div>`;
+    <div class="mid"><strong>${esc(j.name)}</strong><span>${esc(detail)}</span>${shiftStatus(s)}${s.note ? `<span class="notel">“${esc(s.note)}”</span>` : ''}</div>
+    <div class="end"><strong>${money(shiftEarnings(s))}</strong><span>${hrs(paidH(s))} h</span></div></div></div>`;
 }
 function renderShifts() {
-  const list = (pdata(cur.start).shifts || []).slice().sort((a, b) => (b.date + (b.start || '')).localeCompare(a.date + (a.start || '')));
+  document.querySelectorAll('#tab-home .seg3 button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === listFilter));
+  const all = (pdata(cur.start).shifts || []).slice().sort((a, b) => (b.date + (b.start || '')).localeCompare(a.date + (a.start || '')));
+  const list = all.filter(s => listFilter === 'all' || (listFilter === 'done' ? s.confirmed : !s.confirmed));
   const el = $('shiftList');
-  if (!list.length) { el.innerHTML = `<div class="empty"><span>No shifts logged for ${fmtDate(cur.start)} – ${fmtDate(cur.end)}.</span><button class="btn" id="emptyAdd" style="padding:0 20px">Add your first shift</button></div>`; $('emptyAdd').onclick = () => openAdd(); return; }
+  renderTickAll();
+  if (!all.length) { el.innerHTML = `<div class="empty"><span>No shifts logged for ${fmtDate(cur.start)} – ${fmtDate(cur.end)}.</span><button class="btn" id="emptyAdd" style="padding:0 20px">Add your first shift</button></div>`; $('emptyAdd').onclick = () => openAdd(); return; }
+  if (!list.length) { el.innerHTML = `<div class="empty">${listFilter === 'wait' ? 'Nothing waiting in this pay period. Every shift is ticked off.' : 'No shifts ticked off in this pay period yet.'}</div>`; return; }
   el.innerHTML = list.map(s => shiftRow(s, true)).join('');
   el.querySelectorAll('.item').forEach(it => {
     const id = it.dataset.id, row = it.querySelector('.row'), s = list.find(x => (x.id || '') === id);
-    const del = () => { const p = pdata(cur.start); p.shifts = p.shifts.filter(x => x !== s); periods[cur.start] = p; store.savePeriod(cur.start); render(); toast('Shift deleted'); };
+    const del = () => { const f = findShift(id); if (!f) return; periods[f.st].shifts.splice(f.i, 1); store.savePeriod(f.st); render(); toast('Shift deleted'); };
     it.querySelector('.del').onclick = del;
-    const x = it.querySelector('[data-act="del"]'); let armed = false;
-    x.onclick = () => { if (!armed) { armed = true; row.style.transform = 'translateX(-92px)'; setTimeout(() => { armed = false; row.style.transform = ''; }, 3000); } };
-    // swipe left to reveal Delete
-    let sx = null, dx = 0;
-    row.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; sx = e.clientX; dx = 0; row.style.transition = 'none'; });
-    row.addEventListener('pointermove', e => { if (sx === null) return; dx = Math.min(0, e.clientX - sx); row.style.transform = `translateX(${Math.max(-110, dx)}px)`; });
+    const cb = it.querySelector('[data-act="chk"]');
+    cb.addEventListener('click', e => e.stopPropagation());
+    cb.onchange = () => { const want = cb.checked; cb.checked = !want; askConfirm(s, want); };
+    // swipe left to reveal Delete; tap to edit
+    let sx = null, dx = 0, moved = false;
+    row.addEventListener('pointerdown', e => { if (e.target.closest('button,label,input')) return; sx = e.clientX; dx = 0; moved = false; row.style.transition = 'none'; });
+    row.addEventListener('pointermove', e => { if (sx === null) return; dx = Math.min(0, e.clientX - sx); if (dx < -8) moved = true; row.style.transform = `translateX(${Math.max(-110, dx)}px)`; });
     const endSwipe = () => { if (sx === null) return; row.style.transition = ''; row.style.transform = dx < -50 ? 'translateX(-92px)' : ''; sx = null; };
     row.addEventListener('pointerup', endSwipe); row.addEventListener('pointercancel', endSwipe); row.addEventListener('pointerleave', endSwipe);
+    row.addEventListener('click', e => { if (e.target.closest('button,label,input')) return; if (moved || row.style.transform) { if (!moved) row.style.transform = ''; moved = false; return; } openAdd(s.date, s); });
   });
 }
+document.querySelectorAll('#tab-home .seg3 button').forEach(b => b.onclick = () => { listFilter = b.dataset.f; renderShifts(); });
+function renderTickAll() {
+  const p = pdata(cur.start), open = (p.shifts || []).filter(s => !s.confirmed && s.date <= todayIso()), hasStub = Object.keys(p.stub || {}).length > 0;
+  const txt = `✓ Tick off ${open.length} shift${open.length === 1 ? '' : 's'} as on the ${fmtDate(cur.payDate)} stub`;
+  [['tickAll', hasStub || cur.payDate <= todayIso()], ['tickAllPay', hasStub]].forEach(([id, cond]) => { const b = $(id); b.hidden = !(open.length && cond); b.textContent = txt; b.onclick = tickAllCur; });
+}
+function tickAllCur() {
+  const p = pdata(cur.start); let n = 0;
+  (p.shifts || []).forEach((s, i) => { if (!s.confirmed && s.date <= todayIso()) { p.shifts[i] = { ...s, confirmed: true, stubDate: cur.payDate, paid: null }; n++; } });
+  periods[cur.start] = p; store.savePeriod(cur.start); render(); toast(`${n} shift${n === 1 ? '' : 's'} ticked off`);
+}
+// confirm (or un-confirm) one shift against a pay stub
+let confPending = null;
+function askConfirm(s, on) {
+  confPending = { id: s.id, on }; const j = jobById(s.job);
+  $('confTitle').textContent = on ? 'On your pay stub?' : 'Move back to waiting?';
+  $('confWhat').textContent = `${fmtDate(s.date, { weekday: 'short', month: 'short', day: 'numeric' })} · ${j.name} · ${hrs(paidH(s))} h · ${money(shiftEarnings(s))}`;
+  $('confMsg').textContent = on ? 'Check that this shift shows on your pay stub. The stub date is filled in from the pay period; add the amount it paid if you like.' : 'This removes the tick and the stub date and amount saved with it.';
+  $('confFields').hidden = !on; $('confStub').value = s.stubDate || E.periodFor(s.date).payDate;
+  $('confPaid').value = s.paid != null ? s.paid.toFixed(2) : ''; $('confPaid').placeholder = shiftEarnings(s).toFixed(2);
+  $('confYes').textContent = on ? 'Tick off' : 'Move back to waiting'; $('confBg').hidden = false;
+}
+function closeConf() { $('confBg').hidden = true; confPending = null; }
+$('confNo').onclick = closeConf; $('confBg').addEventListener('click', e => { if (e.target === $('confBg')) closeConf(); });
+$('confYes').onclick = () => {
+  if (!confPending) return; const { id, on } = confPending, pv = $('confPaid').value;
+  updateShift(id, on ? { confirmed: true, stubDate: $('confStub').value || todayIso(), paid: pv === '' ? null : Math.round(Number(pv) * 100) / 100 } : { confirmed: false, stubDate: null, paid: null });
+  closeConf(); render(); toast(on ? 'Ticked off: on your pay stub' : 'Moved back to waiting');
+};
 
 // ----- Pay: this cheque -----
 const STUB_FIELDS = [['hours', 'Hours paid'], ['gross', 'Current earnings'], ['cpp', 'CPP'], ['ei', 'EI'], ['fedTax', 'Federal Inc Tax'], ['bcTax', 'BC Income Tax'], ['dues', 'Union dues'], ['net', 'Cheque amount (net)']];
@@ -1009,7 +1125,7 @@ function renderDayCard(el, iso, inSheet) {
   el.innerHTML = `${inSheet ? '<div class="grab"></div>' : ''}<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
       <div><h2 id="${inSheet ? 'dayTitle' : ''}" style="font-size:18px">${fmtDate(iso, { weekday: 'long', month: 'short', day: 'numeric' })}</h2>${stat ? `<p class="hint" style="color:var(--bad)"><b>${esc(stat)}</b> · stat holiday</p>` : ''}</div>
       ${list.length ? `<strong style="white-space:nowrap">${hrs(a + u)} h · ${money(total)}</strong>` : ''}${inSheet ? '<button class="link" id="dayClose" style="font-size:16px">Done</button>' : ''}</div>
-    ${list.length ? list.map(s => { const j = jobById(s.job) || { name: s.job }; return `<div class="dline"><span class="bar ${s.job === 'union' ? 'iu' : 'ia'}"></span><div class="mid"><strong>${esc(j.name)}</strong><span>${s.start ? `${t12(s.start)}–${t12(s.end)}` : 'Hours only'}${s.start && s.breakMin ? ` · ${s.breakMin} min ${j.paidBreaks ? 'paid' : 'unpaid'} break` : ''}</span></div><strong style="white-space:nowrap">${hrs(paidH(s))} h · ${money(shiftEarnings(s))}</strong></div>`; }).join('') : '<p class="hint">No shifts on this day.</p>'}
+    ${list.length ? list.map(s => { const j = jobById(s.job) || { name: s.job }; return `<div class="dline"><span class="bar ${s.job === 'union' ? 'iu' : 'ia'}"></span><div class="mid"><strong>${esc(j.name)}</strong><span>${s.start ? `${t12(s.start)}–${t12(s.end)}` : 'Hours only'}${s.start && s.breakMin ? ` · ${s.breakMin} min ${j.paidBreaks ? 'paid' : 'unpaid'} break` : ''}</span>${shiftStatus(s)}${s.note ? `<span class="notel">“${esc(s.note)}”</span>` : ''}</div><strong style="white-space:nowrap">${hrs(paidH(s))} h · ${money(shiftEarnings(s))}</strong></div>`; }).join('') : '<p class="hint">No shifts on this day.</p>'}
     <button class="btn ghost" data-add="${iso}">Add a shift on this day</button>`;
   el.querySelector('[data-add]').onclick = () => { closeDay(); openAdd(iso); };
   if (inSheet) $('dayClose').onclick = closeDay;
@@ -1079,11 +1195,22 @@ function renderSettings() {
 
 // ---------- add-shift sheet ----------
 let selJob = 'aux', selTpl = null;
-function openAdd(date) {
+function openAdd(date, shift) {
+  editing = shift ? shift.id : null; selTpl = null; $('fErr').hidden = true;
+  $('addTitle').textContent = shift ? 'Edit shift' : 'Add a shift'; $('addShift').textContent = shift ? 'Save changes' : 'Add shift'; $('delShift').hidden = !shift;
   $('fDate').value = date || ((todayIso() >= cur.start && todayIso() <= cur.end) ? todayIso() : cur.start);
-  $('fErr').hidden = true; selTpl = null; $('addBg').hidden = false; setJob(selJob); renderChips(); updatePreview();
+  $('fNote').value = shift ? shift.note || '' : '';
+  if (shift) {
+    selJob = shift.job; $('fHoursOnly').checked = !shift.start;
+    if (shift.start) { $('fStart').value = shift.start; $('fEnd').value = shift.end; $('fBreak').value = shift.breakMin || 0; } else $('fHours').value = shift.hours;
+    if (shift.type) $('fType').value = shift.type;
+  } else $('fHoursOnly').checked = false;
+  $('fTimes').hidden = $('fHoursOnly').checked; $('fBreakLine').hidden = $('fHoursOnly').checked; $('fHoursLine').hidden = !$('fHoursOnly').checked;
+  $('addBg').hidden = false; setJob(selJob); renderChips(); updatePreview();
 }
-function closeAdd() { $('addBg').hidden = true; }
+function closeAdd() { $('addBg').hidden = true; editing = null; }
+$('delShift').onclick = () => { const b = $('delShift'); if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = 'Tap again to delete'; setTimeout(() => { delete b.dataset.armed; b.textContent = 'Delete this shift'; }, 3000); return; }
+  delete b.dataset.armed; b.textContent = 'Delete this shift'; const f = findShift(editing); if (f) { periods[f.st].shifts.splice(f.i, 1); store.savePeriod(f.st); } closeAdd(); render(); toast('Shift deleted'); };
 function setJob(j) {
   selJob = j; $('jobAux').setAttribute('aria-pressed', j === 'aux'); $('jobUnion').setAttribute('aria-pressed', j === 'union');
   $('fTypeLine').hidden = j === 'union';
@@ -1104,12 +1231,13 @@ function renderChips() {
 function formShift() {
   const s = { date: $('fDate').value, job: selJob, type: selJob === 'union' ? 'regular' : $('fType').value };
   if ($('fHoursOnly').checked) s.hours = Number($('fHours').value) || 0; else { s.start = $('fStart').value; s.end = $('fEnd').value; s.breakMin = Number($('fBreak').value) || 0; }
+  const note = $('fNote').value.trim(); if (note) s.note = note;
   return s;
 }
 function updatePreview() {
   const s = formShift(), el = $('fPreview');
   if (!s.date || !(E.shiftHours(s) > 0)) { el.innerHTML = `<span class="k ${selJob === 'union' ? '' : 'a'}">This shift earns</span><span class="amt">$0.00</span><span class="note">Enter a date and times to see what the shift earns.</span>`; return; }
-  const st = E.periodFor(s.date).start, base = pdata(st).shifts || [];
+  const st = E.periodFor(s.date).start, base = (pdata(st).shifts || []).filter(x => !editing || x.id !== editing);
   const before = calcFor(st, false, base), after = calcFor(st, false, base.concat([s]));
   const key = l => l.job + '|' + l.label + '|' + (l.rate || 0).toFixed(4);
   const bm = {}; before.lines.forEach(l => { if (l.kind === 'earning') bm[key(l)] = l; });
@@ -1127,15 +1255,19 @@ $('fHoursOnly').addEventListener('change', toggleHoursOnly);
 $('jobAux').onclick = () => { selTpl = null; setJob('aux'); }; $('jobUnion').onclick = () => { selTpl = null; setJob('union'); };
 $('addCancel').onclick = closeAdd; $('fab').onclick = () => openAdd();
 $('addBg').addEventListener('click', e => { if (e.target === $('addBg')) closeAdd(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAdd(); closeDay(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAdd(); closeDay(); closeConf(); } });
+$('wnX').onclick = () => { $('whatsNew').hidden = true; };
 $('addShift').onclick = () => {
   const s = formShift(), err = $('fErr'); err.hidden = true;
   if (!s.date) { err.textContent = 'Pick a date for the shift.'; err.hidden = false; return; }
   if (!(E.shiftHours(s) > 0)) { err.textContent = 'This shift has 0 hours. Check the start, end and break.'; err.hidden = false; return; }
-  const per = E.periodFor(s.date), p = periods[per.start] || { shifts: [], stub: {} };
-  p.shifts = (p.shifts || []).concat([{ id: Math.random().toString(36).slice(2, 10), ...s }]);
+  const per = E.periodFor(s.date); let keep = { id: newId() };
+  if (editing) { const f = findShift(editing); if (f) { keep = { id: f.s.id, confirmed: f.s.confirmed, stubDate: f.s.stubDate, paid: f.s.paid }; periods[f.st].shifts.splice(f.i, 1); if (f.st !== per.start) store.savePeriod(f.st); } }
+  Object.keys(keep).forEach(k => keep[k] === undefined && delete keep[k]);
+  const p = periods[per.start] || { shifts: [], stub: {} };
+  p.shifts = (p.shifts || []).concat([{ ...keep, ...s }]);
   periods[per.start] = p; store.savePeriod(per.start); cur = per; calSel = s.date; calMonth = s.date.slice(0, 7);
-  closeAdd(); render(); toast(`Added ${hrs(paidH(s))} h · ${jobById(s.job).name}`);
+  const wasEdit = !!editing; closeAdd(); render(); toast(wasEdit ? 'Changes saved' : `Added ${hrs(paidH(s))} h · ${jobById(s.job).name}`);
 };
 
 // ---------- other actions ----------

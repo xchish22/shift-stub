@@ -5,6 +5,17 @@ Version numbers: MAJOR.MINOR.PATCH
 - MINOR: new features
 - PATCH: fixes and small changes
 
+## v2.3.0 – November 10, 2026
+Ideas borrowed from the Overtime Tracker app.
+- Check-off: tick each shift once it shows on a pay stub (stub date filled in, amount optional). Shifts show Waiting, ✓ On stub, Scheduled, or "payday passed · not ticked".
+- Filter shifts by Waiting / On stub / All.
+- "Tick off N shifts" button once a pay period's stub is entered or its payday has passed.
+- "Waiting for stub" tile on Home: pay not yet ticked off, and how many shifts are past payday.
+- Tap a shift to edit it, add a note, or delete it.
+- Backup chip counts changes since the last backup (Back up • 3); tap it to back up.
+- After an update, a "what's new" note on Home; also in Settings.
+- Restore can add only what's missing (keeps your data) or replace everything.
+
 ## v2.2.0 – November 3, 2026
 New look and a Year screen, built from the approved mockups.
 - New iPhone-style design: large titles, frosted tab bar with icons (Home, Pay, Calendar, Seniority, Settings), dark mode.
